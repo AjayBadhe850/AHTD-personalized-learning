@@ -1,0 +1,29 @@
+# GitHub Pages Configuration
+title: AI Learning Platform
+description: A comprehensive personalized learning platform with adaptive content and progress tracking
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Exclude files from processing
+exclude:
+  - node_modules/
+  - package.json
+  - package-lock.json
+  - server.js
+  - create-sample-data.js
+  - .gitignore
+  - README.md
+
+# Include files
+include:
+  - index.html
+  - script.js
+  - styles.css
+
+# Plugin settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
