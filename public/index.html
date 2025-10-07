@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Learning Platform - Personalized Education</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-brain"></i>
+                        <span>AI Learning Platform</span>
+                    </div>
+                    <nav class="nav-menu">
+                        <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                        <a href="#subjects" class="nav-link" data-section="subjects">
+                            <i class="fas fa-book"></i>
+                            Subjects
+                        </a>
+                        <a href="#lessons" class="nav-link" data-section="lessons">
+                            <i class="fas fa-play-circle"></i>
+                            Lessons
+                        </a>
+                        <a href="#progress" class="nav-link" data-section="progress">
+                            <i class="fas fa-chart-line"></i>
+                            Progress
+                        </a>
+                        <a href="#recommendations" class="nav-link" data-section="recommendations">
+                            <i class="fas fa-lightbulb"></i>
+                            AI Recommendations
+                        </a>
+                        <a href="#students" class="nav-link" data-section="students">
+                            <i class="fas fa-users"></i>
+                            Students
+                        </a>
+                        <a href="#admin" class="nav-link" data-section="admin">
+                            <i class="fas fa-cog"></i>
+                            Admin
+                        </a>
+                    </nav>
+                    <div class="header-actions">
+                <button class="btn btn-outline" id="register-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Register
+                </button>
+                <button class="btn btn-danger" id="logout-btn" style="display: none;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+                        <button class="btn btn-outline" id="theme-toggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section class="content-section active" id="dashboard-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Learning Dashboard
+                        </h1>
+                        <p class="section-subtitle">Track your progress and discover new learning opportunities</p>
+                    </div>
+                    
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" id="total-lessons">0</h3>
+                                <p class="stat-label">Total Lessons</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" id="completed-lessons">0</h3>
+                                <p class="stat-label">Completed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" id="time-spent">0h</h3>
+                                <p class="stat-label">Time Spent</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 class="stat-number" id="average-score">0%</h3>
+                                <p class="stat-label">Average Score</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <h2 class="section-subtitle">Quick Actions</h2>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="showSection('subjects')">
+                                <i class="fas fa-search"></i>
+                                Browse Subjects
+                            </button>
+                            <button class="action-btn" onclick="showSection('recommendations')">
+                                <i class="fas fa-robot"></i>
+                                Get AI Recommendations
+                            </button>
+                            <button class="action-btn" onclick="showSection('progress')">
+                                <i class="fas fa-chart-line"></i>
+                                View Progress
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <h2 class="section-subtitle">Recent Activity</h2>
+                        <div class="activity-list" id="recent-activity-list">
+                            <div class="activity-item">
+                                <i class="fas fa-play-circle"></i>
+                                <div class="activity-content">
+                                    <h4>Welcome to AI Learning Platform!</h4>
+                                    <p>Start your learning journey by exploring subjects and lessons</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subjects Section -->
+            <section class="content-section" id="subjects-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-book"></i>
+                            Learning Subjects
+                        </h1>
+                        <p class="section-subtitle">Choose from our comprehensive collection of subjects</p>
+                    </div>
+                    
+                    <div class="subjects-grid" id="subjects-grid">
+                        <!-- Subjects will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Lessons Section -->
+            <section class="content-section" id="lessons-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-play-circle"></i>
+                            Lessons
+                        </h1>
+                        <div class="section-controls">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="lesson-search" placeholder="Search lessons...">
+                            </div>
+                            <select id="subject-filter" class="filter-select">
+                                <option value="">All Subjects</option>
+                            </select>
+                            <select id="difficulty-filter" class="filter-select">
+                                <option value="">All Levels</option>
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="lessons-grid" id="lessons-grid">
+                        <!-- Lessons will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="content-section" id="progress-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-chart-line"></i>
+                            Learning Progress
+                        </h1>
+                    </div>
+                    
+                    <div class="progress-content">
+                        <div class="progress-charts">
+                            <div class="chart-container">
+                                <h3>Weekly Progress</h3>
+                                <canvas id="weekly-chart"></canvas>
+                            </div>
+                            
+                            <div class="chart-container">
+                                <h3>Subject Progress</h3>
+                                <canvas id="subject-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-details">
+                            <div class="difficulty-progress">
+                                <h3>Progress by Difficulty</h3>
+                                <div class="difficulty-bars" id="difficulty-bars">
+                                    <!-- Difficulty progress bars will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recommendations Section -->
+            <section class="content-section" id="recommendations-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-lightbulb"></i>
+                            AI-Powered Recommendations
+                        </h1>
+                        <p class="section-subtitle">Personalized lessons based on your learning progress</p>
+                    </div>
+                    
+                    <div class="recommendations-grid" id="recommendations-grid">
+                        <!-- Recommendations will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students Section -->
+            <section class="content-section" id="students-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-users"></i>
+                            Student Management
+                        </h1>
+                        <p class="section-subtitle">View and manage student progress and analytics</p>
+                    </div>
+                    
+                    <div class="students-grid" id="students-grid">
+                        <!-- Students will be loaded here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Section -->
+            <section class="content-section" id="admin-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">
+                            <i class="fas fa-cog"></i>
+                            Admin Panel
+                        </h1>
+                        <p class="section-subtitle">Manage lessons, syllabi, and system settings</p>
+                    </div>
+                    
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" data-tab="lessons">Import Lessons</button>
+                        <button class="admin-tab" data-tab="syllabi">Manage Syllabi</button>
+                        <button class="admin-tab" data-tab="typing">Typing Tests</button>
+                    </div>
+                    
+                    <!-- Import Lessons Tab -->
+                    <div class="admin-content active" id="lessons-tab">
+                        <div class="import-section">
+                            <h3>Import Lessons</h3>
+                            <div class="import-form">
+                                <div class="form-group">
+                                    <label for="lesson-json">Lesson JSON Data</label>
+                                    <textarea id="lesson-json" placeholder="Paste your lesson JSON data here..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="import-subject">Subject</label>
+                                    <select id="import-subject">
+                                        <option value="">Select Subject</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" id="import-lessons-btn">
+                                    <i class="fas fa-upload"></i>
+                                    Import Lessons
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Manage Syllabi Tab -->
+                    <div class="admin-content" id="syllabi-tab">
+                        <div class="syllabi-section">
+                            <h3>Create New Syllabus</h3>
+                            <div class="syllabus-form">
+                                <div class="form-group">
+                                    <label for="syllabus-name">Syllabus Name</label>
+                                    <input type="text" id="syllabus-name" placeholder="Enter syllabus name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="syllabus-description">Description</label>
+                                    <textarea id="syllabus-description" placeholder="Enter syllabus description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="syllabus-subject">Subject</label>
+                                    <select id="syllabus-subject">
+                                        <option value="">Select Subject</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="syllabus-duration">Duration</label>
+                                    <input type="text" id="syllabus-duration" placeholder="e.g., 12 weeks">
+                                </div>
+                                <button class="btn btn-primary" id="create-syllabus-btn">
+                                    <i class="fas fa-plus"></i>
+                                    Create Syllabus
+                                </button>
+                            </div>
+                            
+                            <div class="syllabi-list" id="syllabi-list">
+                                <!-- Syllabi will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Typing Tests Tab -->
+                    <div class="admin-content" id="typing-tab">
+                        <div class="typing-section">
+                            <h3>Typing Speed Test</h3>
+                            <div class="typing-test">
+                                <div class="typing-text" id="typing-text">
+                                    The quick brown fox jumps over the lazy dog. This is a sample text for typing practice.
+                                </div>
+                                <textarea id="typing-input" placeholder="Start typing here..."></textarea>
+                                <div class="typing-stats">
+                                    <div class="stat">
+                                        <span class="stat-label">WPM:</span>
+                                        <span class="stat-value" id="wpm-display">0</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Accuracy:</span>
+                                        <span class="stat-value" id="accuracy-display">0%</span>
+                                    </div>
+                                    <div class="stat">
+                                        <span class="stat-label">Time:</span>
+                                        <span class="stat-value" id="time-display">0s</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" id="start-typing-test">
+                                    <i class="fas fa-play"></i>
+                                    Start Test
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Lesson Modal -->
+        <div class="modal" id="lesson-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-lesson-title">Lesson Title</h3>
+                    <button class="modal-close" id="modal-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="lesson-info">
+                        <div class="lesson-meta">
+                            <span class="lesson-difficulty" id="modal-lesson-difficulty">Beginner</span>
+                            <span class="lesson-duration" id="modal-lesson-duration">30 min</span>
+                            <span class="lesson-subject" id="modal-lesson-subject">Subject</span>
+                        </div>
+                        <p class="lesson-description" id="modal-lesson-description">Lesson description...</p>
+                    </div>
+                    
+                    <div class="lesson-content" id="modal-lesson-content">
+                        <!-- Lesson content will be loaded here -->
+                    </div>
+                    
+                    <div class="lesson-actions">
+                        <button class="btn btn-secondary" id="mark-incomplete">
+                            <i class="fas fa-undo"></i>
+                            Mark as Incomplete
+                        </button>
+                        <button class="btn btn-primary" id="mark-complete">
+                            <i class="fas fa-check"></i>
+                            Mark as Complete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Modal -->
+        <div class="modal" id="registration-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Student Registration</h3>
+                    <button class="modal-close" id="registration-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="registration-form">
+                        <div class="form-group">
+                            <label for="reg-name">Full Name</label>
+                            <input type="text" id="reg-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">Email</label>
+                            <input type="email" id="reg-email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-age">Age</label>
+                            <input type="number" id="reg-age" name="age" min="5" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-grade">Grade Level</label>
+                            <select id="reg-grade" name="grade">
+                                <option value="">Select Grade</option>
+                                <option value="Elementary">Elementary</option>
+                                <option value="Middle School">Middle School</option>
+                                <option value="High School">High School</option>
+                                <option value="College">College</option>
+                                <option value="Adult">Adult</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-interests">Learning Interests</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="interests" value="mathematics">
+                                    <span class="checkmark"></span>
+                                    Mathematics
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="interests" value="science">
+                                    <span class="checkmark"></span>
+                                    Science
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="interests" value="programming">
+                                    <span class="checkmark"></span>
+                                    Programming
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="interests" value="literature">
+                                    <span class="checkmark"></span>
+                                    Literature
+                                </label>
+                            </div>
+                        </div>
+                    <div class="form-group">
+                        <label for="reg-goals">Learning Goals</label>
+                        <textarea id="reg-goals" name="learningGoals" placeholder="Describe your learning goals..."></textarea>
+                    </div>
+                    
+                    <h4 class="form-section-title">Parent/Guardian Contact Information</h4>
+                    
+                    <div class="form-group">
+                        <label for="reg-parent-name">Parent/Guardian Name</label>
+                        <input type="text" id="reg-parent-name" name="parentName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-parent-email">Parent/Guardian Email</label>
+                        <input type="email" id="reg-parent-email" name="parentEmail" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-parent-phone">Parent/Guardian Phone Number</label>
+                        <input type="tel" id="reg-parent-phone" name="parentPhone" required placeholder="+1234567890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-emergency-contact">Emergency Contact</label>
+                        <input type="tel" id="reg-emergency-contact" name="emergencyContact" placeholder="+1234567890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-address">Address</label>
+                        <textarea id="reg-address" name="address" placeholder="Enter your full address..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="reg-notifications" name="notifications" checked>
+                            <span class="checkmark"></span>
+                            Send progress updates and notifications to parent/guardian
+                        </label>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="registration-cancel">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Details Modal -->
+        <div class="modal" id="student-details-modal">
+            <div class="modal-content large">
+                <div class="modal-header">
+                    <h3 id="student-details-title">Student Details</h3>
+                    <button class="modal-close" id="student-details-close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="student-details-content" id="student-details-content">
+                        <!-- Student details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+        
+        <!-- Debug Panel -->
+        <div id="debug-panel" style="position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 9999; display: none;">
+            <div>Debug Panel</div>
+            <div id="debug-status">Initializing...</div>
+            <div id="debug-buttons">Buttons: Checking...</div>
+            <div id="debug-api">API: Checking...</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+    
+    <!-- Fallback script to ensure basic functionality -->
+    <script>
+        // Show debug panel
+        const debugPanel = document.getElementById('debug-panel');
+        debugPanel.style.display = 'block';
+        
+        // Update debug status
+        function updateDebugStatus(message) {
+            document.getElementById('debug-status').textContent = message;
+        }
+        
+        function updateDebugButtons(message) {
+            document.getElementById('debug-buttons').textContent = message;
+        }
+        
+        function updateDebugAPI(message) {
+            document.getElementById('debug-api').textContent = message;
+        }
+        
+        // Test API connection
+        fetch('/api/subjects')
+            .then(response => response.json())
+            .then(data => {
+                updateDebugAPI(`API: ✅ Connected (${data.length} subjects)`);
+            })
+            .catch(error => {
+                updateDebugAPI('API: ❌ Connection failed');
+            });
+        
+        // Fallback initialization
+        setTimeout(() => {
+            if (!window.aiLearningPlatform) {
+                console.error('❌ AI Learning Platform failed to initialize');
+                updateDebugStatus('❌ Main app failed to initialize');
+                
+                // Add basic click handlers as fallback
+                const registerBtn = document.getElementById('register-btn');
+                if (registerBtn) {
+                    registerBtn.addEventListener('click', () => {
+                        alert('Register button clicked! (Fallback handler)');
+                    });
+                    updateDebugButtons('Buttons: ✅ Fallback handlers added');
+                } else {
+                    updateDebugButtons('Buttons: ❌ Register button not found');
+                }
+                
+                // Add navigation fallback
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = e.target.closest('.nav-link').dataset.section;
+                        alert(`Navigation clicked: ${section} (Fallback handler)`);
+                    });
+                });
+                
+                if (navLinks.length > 0) {
+                    updateDebugButtons(`Buttons: ✅ ${navLinks.length} nav links with fallback`);
+                }
+            } else {
+                updateDebugStatus('✅ Main app initialized');
+                updateDebugButtons('Buttons: ✅ Main app handlers active');
+            }
+        }, 1000);
+        
+        // Hide debug panel after 5 seconds
+        setTimeout(() => {
+            debugPanel.style.display = 'none';
+        }, 5000);
+    </script>
+</body>
+</html>
