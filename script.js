@@ -54,6 +54,14 @@ class AILearningPlatform {
         this.showSection('dashboard');
         this.startSessionTracking();
         
+        // Show welcome animation if student is logged in
+        if (this.currentStudent) {
+            setTimeout(() => {
+                this.showWelcomeModal(this.currentStudent);
+                this.updateDashboardProfile(this.currentStudent);
+            }, 1000);
+        }
+        
         console.log('🎉 AI Learning Platform initialized successfully!');
     }
 
@@ -185,6 +193,20 @@ class AILearningPlatform {
             if (e.target.id === 'lesson-modal') {
                 this.closeModal();
             }
+        });
+
+        // Profile picture upload
+        safeBindById('reg-profile-pic', 'change', (e) => {
+            this.handleProfilePicUpload(e);
+        });
+
+        safeBindById('profile-pic-preview', 'click', () => {
+            document.getElementById('reg-profile-pic').click();
+        });
+
+        // Welcome modal
+        safeBindById('welcome-continue', 'click', () => {
+            this.closeWelcomeModal();
         });
 
         document.getElementById('registration-modal').addEventListener('click', (e) => {
@@ -329,6 +351,7 @@ class AILearningPlatform {
                 email: 'demo@example.com',
                 grade: 'High School',
                 interests: ['mathematics', 'programming'],
+                profilePic: null, // No profile pic for demo student
                 totalLessonsCompleted: 5,
                 totalTimeSpent: 7200000, // 2 hours in milliseconds
                 averageTypingSpeed: 45
@@ -513,6 +536,7 @@ class AILearningPlatform {
                     email: registrationData.email,
                     grade: registrationData.grade,
                     interests: registrationData.interests,
+                    profilePic: this.profilePicData || null,
                     totalLessonsCompleted: 0,
                     totalTimeSpent: 0,
                     averageTypingSpeed: 0
@@ -527,6 +551,14 @@ class AILearningPlatform {
                 // Add to demo students
                 this.students.push(newStudent);
                 this.renderStudents();
+                
+                // Show welcome animation
+                setTimeout(() => {
+                    this.showWelcomeModal(newStudent);
+                }, 500);
+                
+                // Update dashboard profile
+                this.updateDashboardProfile(newStudent);
                 
             } else {
                 // Real API call
@@ -560,6 +592,91 @@ class AILearningPlatform {
         } catch (error) {
             console.error('Registration error:', error);
             this.showToast(error.message, 'error');
+        }
+    }
+
+    // Profile Picture Upload Handler
+    handleProfilePicUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('profile-pic-preview');
+                preview.innerHTML = `<img src="${e.target.result}" alt="Profile Picture">`;
+                preview.classList.add('has-image');
+                
+                // Store the image data for later use
+                this.profilePicData = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Welcome Animation Functions
+    showWelcomeModal(student) {
+        const modal = document.getElementById('welcome-modal');
+        const profilePic = document.getElementById('welcome-profile-pic');
+        const name = document.getElementById('welcome-name');
+        const lessons = document.getElementById('welcome-lessons');
+        const time = document.getElementById('welcome-time');
+
+        // Set profile picture
+        if (student.profilePic) {
+            profilePic.innerHTML = `<img src="${student.profilePic}" alt="Profile Picture">`;
+        } else {
+            profilePic.innerHTML = '<i class="fas fa-user-circle"></i>';
+        }
+
+        // Set name
+        name.textContent = student.name;
+
+        // Set stats
+        lessons.textContent = student.totalLessonsCompleted || 0;
+        const hours = Math.round((student.totalTimeSpent || 0) / (1000 * 60 * 60));
+        time.textContent = `${hours}h`;
+
+        // Show modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Auto-close after 5 seconds if not interacted with
+        setTimeout(() => {
+            if (modal.style.display === 'flex') {
+                this.closeWelcomeModal();
+            }
+        }, 5000);
+    }
+
+    closeWelcomeModal() {
+        const modal = document.getElementById('welcome-modal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Update Dashboard Profile Display
+    updateDashboardProfile(student) {
+        const profileSection = document.getElementById('dashboard-profile');
+        const profilePic = document.getElementById('dashboard-profile-pic');
+        const name = document.getElementById('dashboard-profile-name');
+        const email = document.getElementById('dashboard-profile-email');
+
+        if (student) {
+            // Set profile picture
+            if (student.profilePic) {
+                profilePic.innerHTML = `<img src="${student.profilePic}" alt="Profile Picture">`;
+            } else {
+                profilePic.innerHTML = '<i class="fas fa-user-circle"></i>';
+            }
+
+            // Set name and email
+            name.textContent = student.name;
+            email.textContent = student.email;
+
+            // Show profile section
+            profileSection.style.display = 'flex';
+        } else {
+            // Hide profile section
+            profileSection.style.display = 'none';
         }
     }
 

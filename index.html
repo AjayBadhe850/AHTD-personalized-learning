@@ -79,6 +79,16 @@
             <!-- Dashboard Section -->
             <section class="content-section active" id="dashboard-section">
                 <div class="container">
+                    <div class="dashboard-profile" id="dashboard-profile" style="display: none;">
+                        <div class="dashboard-profile-pic" id="dashboard-profile-pic">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="dashboard-profile-info">
+                            <h3 id="dashboard-profile-name">Student Name</h3>
+                            <p id="dashboard-profile-email">student@example.com</p>
+                        </div>
+                    </div>
+                    
                     <div class="section-header">
                         <h1 class="section-title">
                             <i class="fas fa-tachometer-alt"></i>
@@ -439,10 +449,21 @@
                 </div>
                 <div class="modal-body">
                     <form id="registration-form">
-                        <div class="form-group">
-                            <label for="reg-name">Full Name</label>
-                            <input type="text" id="reg-name" name="name" required>
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="reg-profile-pic">Profile Picture</label>
+                        <div class="profile-pic-upload">
+                            <input type="file" id="reg-profile-pic" name="profilePic" accept="image/*" style="display: none;">
+                            <div class="profile-pic-preview" id="profile-pic-preview">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Click to upload profile picture</span>
+                            </div>
                         </div>
+                    </div>
                         <div class="form-group">
                             <label for="reg-email">Email</label>
                             <input type="email" id="reg-email" name="email" required>
@@ -555,6 +576,36 @@
 
         <!-- Toast Notifications -->
         <div id="toast-container" class="toast-container"></div>
+        
+        <!-- Welcome Animation Modal -->
+        <div class="modal" id="welcome-modal">
+            <div class="modal-content welcome-modal-content">
+                <div class="welcome-animation">
+                    <div class="welcome-profile-pic" id="welcome-profile-pic">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h2 class="welcome-title">Welcome back!</h2>
+                    <h3 class="welcome-name" id="welcome-name">Student</h3>
+                    <div class="welcome-message">
+                        <p>Ready to continue your learning journey?</p>
+                    </div>
+                    <div class="welcome-stats">
+                        <div class="welcome-stat">
+                            <span class="stat-number" id="welcome-lessons">0</span>
+                            <span class="stat-label">Lessons Completed</span>
+                        </div>
+                        <div class="welcome-stat">
+                            <span class="stat-number" id="welcome-time">0h</span>
+                            <span class="stat-label">Time Spent</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary welcome-continue" id="welcome-continue">
+                        <i class="fas fa-arrow-right"></i>
+                        Continue Learning
+                    </button>
+                </div>
+            </div>
+        </div>
         
         <!-- Debug Panel -->
         <div id="debug-panel" style="position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px; z-index: 9999; display: none;">
