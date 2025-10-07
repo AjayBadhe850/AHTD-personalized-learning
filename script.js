@@ -54,6 +54,9 @@ class AILearningPlatform {
         this.showSection('dashboard');
         this.startSessionTracking();
         
+        // Update UI based on login status
+        this.updateLoginUI(!!this.currentStudent);
+        
         // Show welcome animation if student is logged in
         if (this.currentStudent) {
             setTimeout(() => {
@@ -102,6 +105,25 @@ class AILearningPlatform {
             });
         });
 
+        // Login events
+        safeBindById('login-btn', 'click', () => {
+            console.log('🎯 Login button clicked!');
+            this.showLoginModal();
+        });
+
+        safeBindById('login-form', 'submit', (e) => {
+            e.preventDefault();
+            this.handleLogin();
+        });
+
+        safeBindById('login-close', 'click', () => {
+            this.closeLoginModal();
+        });
+
+        safeBindById('login-cancel', 'click', () => {
+            this.closeLoginModal();
+        });
+
         // Registration events
         safeBindById('register-btn', 'click', () => {
             console.log('🎯 Register button clicked!');
@@ -110,7 +132,11 @@ class AILearningPlatform {
 
         // Logout event
         safeBindById('logout-btn', 'click', () => {
-            this.logoutStudent();
+            if (this.apiBaseUrl === 'demo') {
+                this.logoutStudentDemo();
+            } else {
+                this.logoutStudent();
+            }
         });
 
         safeBindById('registration-form', 'submit', (e) => {
@@ -212,6 +238,12 @@ class AILearningPlatform {
         document.getElementById('registration-modal').addEventListener('click', (e) => {
             if (e.target.id === 'registration-modal') {
                 this.closeRegistrationModal();
+            }
+        });
+
+        document.getElementById('login-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'login-modal') {
+                this.closeLoginModal();
             }
         });
 
@@ -595,6 +627,77 @@ class AILearningPlatform {
         }
     }
 
+    // Login Modal Functions
+    showLoginModal() {
+        const modal = document.getElementById('login-modal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeLoginModal() {
+        const modal = document.getElementById('login-modal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.getElementById('login-form').reset();
+    }
+
+    async handleLogin() {
+        const form = document.getElementById('login-form');
+        const formData = new FormData(form);
+        
+        const loginData = {
+            email: formData.get('email'),
+            name: formData.get('name')
+        };
+
+        try {
+            if (this.apiBaseUrl === 'demo') {
+                // Demo mode - find existing student or create new one
+                let student = this.students.find(s => s.email === loginData.email);
+                
+                if (!student) {
+                    // Create a new student for demo
+                    student = {
+                        id: Date.now().toString(),
+                        name: loginData.name,
+                        email: loginData.email,
+                        grade: 'High School',
+                        interests: ['mathematics', 'programming'],
+                        profilePic: null,
+                        totalLessonsCompleted: 0,
+                        totalTimeSpent: 0,
+                        averageTypingSpeed: 0
+                    };
+                    this.students.push(student);
+                }
+
+                this.currentStudent = student;
+                this.saveCurrentStudent();
+                this.closeLoginModal();
+                this.showToast('Login successful! (Demo mode)', 'success');
+                
+                // Show welcome animation
+                setTimeout(() => {
+                    this.showWelcomeModal(student);
+                }, 500);
+                
+                // Update dashboard profile
+                this.updateDashboardProfile(student);
+                
+                // Update UI
+                this.updateLoginUI(true);
+                
+            } else {
+                // Real API call would go here
+                this.showToast('Login functionality requires backend deployment', 'info');
+            }
+
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showToast('Login failed. Please try again.', 'error');
+        }
+    }
+
     // Profile Picture Upload Handler
     handleProfilePicUpload(event) {
         const file = event.target.files[0];
@@ -741,6 +844,9 @@ class AILearningPlatform {
                 this.updateLoginUI(false);
                 this.currentSession = null;
                 this.sessionStartTime = null;
+                this.currentStudent = null;
+                this.saveCurrentStudent();
+                this.updateDashboardProfile(null);
                 console.log('Student logged out successfully:', result);
             } else {
                 console.error('Logout failed:', result.error);
@@ -748,6 +854,18 @@ class AILearningPlatform {
         } catch (error) {
             console.error('Logout error:', error);
         }
+    }
+
+    // Demo mode logout
+    logoutStudentDemo() {
+        this.showLoginStatus('Logged Out');
+        this.updateLoginUI(false);
+        this.currentSession = null;
+        this.sessionStartTime = null;
+        this.currentStudent = null;
+        this.saveCurrentStudent();
+        this.updateDashboardProfile(null);
+        this.showToast('Logged out successfully! (Demo mode)', 'success');
     }
 
     async trackActivity(activityType, data) {
@@ -842,14 +960,17 @@ class AILearningPlatform {
     }
 
     updateLoginUI(isLoggedIn) {
+        const loginBtn = document.getElementById('login-btn');
         const registerBtn = document.getElementById('register-btn');
         const logoutBtn = document.getElementById('logout-btn');
         
-        if (registerBtn && logoutBtn) {
+        if (loginBtn && registerBtn && logoutBtn) {
             if (isLoggedIn) {
+                loginBtn.style.display = 'none';
                 registerBtn.style.display = 'none';
                 logoutBtn.style.display = 'inline-flex';
             } else {
+                loginBtn.style.display = 'inline-flex';
                 registerBtn.style.display = 'inline-flex';
                 logoutBtn.style.display = 'none';
             }
@@ -1478,8 +1599,15 @@ function showSection(sectionName) {
 // Initialize the application
 console.log('🚀 Starting AI Learning Platform initialization...');
 
-// Create the app instance immediately
-window.aiLearningPlatform = new AILearningPlatform();
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ DOM loaded, creating app instance...');
+    
+    // Create the app instance
+    window.aiLearningPlatform = new AILearningPlatform();
+    
+    console.log('✅ App instance created successfully');
+});
 
 // Load saved theme
 const savedTheme = localStorage.getItem('theme') || 'light';
