@@ -34,8 +34,9 @@ class AILearningPlatform {
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             return 'http://localhost:3000';
         }
-        // Replace with your actual backend URL when deployed
-        return 'https://your-backend-url.vercel.app';
+        // For GitHub Pages, you'll need to deploy the backend separately
+        // For now, using a placeholder - replace with your actual backend URL
+        return 'https://ai-learning-platform-backend.vercel.app';
     }
 
     async init() {
