@@ -29,14 +29,13 @@ class AILearningPlatform {
     }
 
     getApiBaseUrl() {
-        // For GitHub Pages deployment, use the backend URL
+        // For GitHub Pages deployment, use demo mode
         // For local development, use localhost
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             return 'http://localhost:3000';
         }
-        // For GitHub Pages, you'll need to deploy the backend separately
-        // For now, using a placeholder - replace with your actual backend URL
-        return 'https://ai-learning-platform-backend.vercel.app';
+        // For GitHub Pages, use demo mode (no backend required)
+        return 'demo';
     }
 
     async init() {
@@ -224,18 +223,137 @@ class AILearningPlatform {
 
     async loadInitialData() {
         try {
-            await Promise.all([
-                this.loadSubjects(),
-                this.loadLessons(),
-                this.loadStudents(),
-                this.loadSyllabi(),
-                this.loadRecommendations(),
-                this.loadAnalytics()
-            ]);
+            if (this.apiBaseUrl === 'demo') {
+                // Load demo data for GitHub Pages
+                this.loadDemoData();
+            } else {
+                // Load real data from API
+                await Promise.all([
+                    this.loadSubjects(),
+                    this.loadLessons(),
+                    this.loadStudents(),
+                    this.loadSyllabi(),
+                    this.loadRecommendations(),
+                    this.loadAnalytics()
+                ]);
+            }
         } catch (error) {
             console.error('Error loading initial data:', error);
             this.showToast('Failed to load data. Please check your connection.', 'error');
         }
+    }
+
+    loadDemoData() {
+        console.log('🎭 Loading demo data for GitHub Pages...');
+        
+        // Demo subjects
+        this.subjects = [
+            {
+                id: 'math-001',
+                name: 'Mathematics',
+                description: 'Comprehensive mathematics curriculum covering algebra, geometry, calculus, and statistics.',
+                difficulty: 'mixed',
+                icon: 'calculator',
+                color: '#4f46e5'
+            },
+            {
+                id: 'science-001',
+                name: 'Science',
+                description: 'Explore physics, chemistry, biology, and earth sciences with interactive experiments.',
+                difficulty: 'mixed',
+                icon: 'flask',
+                color: '#059669'
+            },
+            {
+                id: 'programming-001',
+                name: 'Programming',
+                description: 'Learn programming languages, algorithms, and software development practices.',
+                difficulty: 'mixed',
+                icon: 'code',
+                color: '#7c3aed'
+            },
+            {
+                id: 'literature-001',
+                name: 'Literature',
+                description: 'Study classic and contemporary literature, writing techniques, and literary analysis.',
+                difficulty: 'mixed',
+                icon: 'book',
+                color: '#ea580c'
+            },
+            {
+                id: 'history-001',
+                name: 'History',
+                description: 'Discover world history, historical events, and their impact on modern society.',
+                difficulty: 'mixed',
+                icon: 'landmark',
+                color: '#dc2626'
+            }
+        ];
+
+        // Demo lessons
+        this.lessons = [
+            {
+                id: 'math-lesson-001',
+                title: 'Introduction to Algebra',
+                description: 'Learn the basics of algebraic expressions, variables, and equations.',
+                content: 'Algebra is a branch of mathematics that uses symbols and letters to represent numbers and quantities in formulas and equations.',
+                subjectId: 'math-001',
+                difficulty: 'beginner',
+                duration: '45 minutes'
+            },
+            {
+                id: 'science-lesson-001',
+                title: 'Introduction to Physics',
+                description: 'Discover the fundamental principles of physics and motion.',
+                content: 'Physics is the natural science that studies matter, its motion and behavior through space and time.',
+                subjectId: 'science-001',
+                difficulty: 'beginner',
+                duration: '50 minutes'
+            },
+            {
+                id: 'programming-lesson-001',
+                title: 'Introduction to JavaScript',
+                description: 'Learn the basics of JavaScript programming language.',
+                content: 'JavaScript is a high-level, interpreted programming language that is one of the core technologies of the World Wide Web.',
+                subjectId: 'programming-001',
+                difficulty: 'beginner',
+                duration: '90 minutes'
+            }
+        ];
+
+        // Demo students
+        this.students = [
+            {
+                id: 'demo-student-001',
+                name: 'Demo Student',
+                email: 'demo@example.com',
+                grade: 'High School',
+                interests: ['mathematics', 'programming'],
+                totalLessonsCompleted: 5,
+                totalTimeSpent: 7200000, // 2 hours in milliseconds
+                averageTypingSpeed: 45
+            }
+        ];
+
+        // Demo recommendations
+        this.recommendations = [
+            {
+                id: 'rec-001',
+                lessonId: 'math-lesson-001',
+                reason: 'Based on your interest in mathematics',
+                priority: 'high'
+            }
+        ];
+
+        this.analytics = {
+            totalStudents: 1,
+            totalLessons: 3,
+            totalTimeSpent: 7200000,
+            averageProgress: 75
+        };
+
+        console.log('✅ Demo data loaded successfully');
+        this.showToast('Demo mode: Using sample data for demonstration', 'info');
     }
 
     async loadSubjects() {
@@ -387,31 +505,57 @@ class AILearningPlatform {
         };
 
         try {
-            const response = await fetch(`${this.apiBaseUrl}/api/students/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(registrationData)
-            });
+            if (this.apiBaseUrl === 'demo') {
+                // Demo mode - simulate registration
+                const newStudent = {
+                    id: Date.now().toString(),
+                    name: registrationData.name,
+                    email: registrationData.email,
+                    grade: registrationData.grade,
+                    interests: registrationData.interests,
+                    totalLessonsCompleted: 0,
+                    totalTimeSpent: 0,
+                    averageTypingSpeed: 0
+                };
 
-            const result = await response.json();
+                this.currentStudent = newStudent;
+                this.saveCurrentStudent();
+                this.closeRegistrationModal();
+                this.showToast('Demo Registration successful! (Demo mode)', 'success');
+                form.reset();
+                
+                // Add to demo students
+                this.students.push(newStudent);
+                this.renderStudents();
+                
+            } else {
+                // Real API call
+                const response = await fetch(`${this.apiBaseUrl}/api/students/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
 
-            if (!response.ok) {
-                throw new Error(result.error || 'Registration failed');
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Registration failed');
+                }
+
+                this.currentStudent = result.student;
+                this.saveCurrentStudent();
+                this.closeRegistrationModal();
+                this.showToast('Registration successful!', 'success');
+                form.reset();
+                
+                // Auto-login the newly registered student
+                await this.loginStudent(result.student.id);
+                
+                // Reload students list
+                this.loadStudents();
             }
-
-            this.currentStudent = result.student;
-            this.saveCurrentStudent();
-            this.closeRegistrationModal();
-            this.showToast('Registration successful!', 'success');
-            form.reset();
-            
-            // Auto-login the newly registered student
-            await this.loginStudent(result.student.id);
-            
-            // Reload students list
-            this.loadStudents();
 
         } catch (error) {
             console.error('Registration error:', error);
