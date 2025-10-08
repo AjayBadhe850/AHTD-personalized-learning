@@ -674,6 +674,108 @@ body {
     color: var(--info-color);
 }
 
+/* Subject Details Modal */
+.subject-details-modal {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.subject-details-info {
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-lg);
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.subject-lessons-section h4 {
+    color: var(--gray-800);
+    margin-bottom: var(--spacing-lg);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.lesson-item {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.lesson-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+.lesson-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-sm);
+}
+
+.lesson-item-title {
+    color: var(--gray-800);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+}
+
+.lesson-item-difficulty {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lesson-item-difficulty.beginner {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.lesson-item-difficulty.intermediate {
+    background: rgba(251, 191, 36, 0.1);
+    color: #d97706;
+}
+
+.lesson-item-difficulty.advanced {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.lesson-item-description {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: var(--spacing-md);
+}
+
+.lesson-item-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    font-size: 0.8rem;
+    color: var(--gray-500);
+}
+
+.lesson-duration,
+.lesson-order {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
 /* Lesson Cards */
 .lesson-card {
     background: white;

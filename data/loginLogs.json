@@ -43,5 +43,16 @@
     "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
     "status": "completed",
     "logoutReason": "User logout"
+  },
+  {
+    "id": "1759911393097",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T08:16:33.097Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
   }
 ]

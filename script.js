@@ -1965,8 +1965,107 @@ class AILearningPlatform {
         const subject = this.subjects.find(s => s.id === subjectId);
         if (!subject) return;
 
-        this.showToast(`Viewing ${subject.name} details`, 'info');
-        // Could implement a modal or navigate to subject page
+        console.log(`🔍 Loading details for subject: ${subject.name} (${subjectId})`);
+        
+        // Filter lessons for this subject
+        const subjectLessons = this.lessons.filter(lesson => lesson.subjectId === subjectId);
+        console.log(`🔍 Found ${subjectLessons.length} lessons for ${subject.name}`);
+        
+        if (subjectLessons.length === 0) {
+            this.showToast(`No lessons available for ${subject.name}`, 'warning');
+            return;
+        }
+
+        // Show subject details modal or navigate to lessons section
+        this.showSubjectLessonsModal(subject, subjectLessons);
+    }
+
+    showSubjectLessonsModal(subject, lessons) {
+        // Create or update the subject details modal
+        let modal = document.getElementById('subject-details-modal');
+        if (!modal) {
+            modal = this.createSubjectDetailsModal();
+        }
+
+        // Populate modal with subject and lessons data
+        document.getElementById('subject-details-title').textContent = subject.name;
+        document.getElementById('subject-details-description').textContent = subject.description;
+        
+        // Update lessons count
+        const lessonsCount = document.getElementById('subject-lessons-count');
+        if (lessonsCount) {
+            lessonsCount.textContent = `${lessons.length} lessons`;
+        }
+
+        // Populate lessons list
+        const lessonsContainer = document.getElementById('subject-lessons-list');
+        if (lessonsContainer) {
+            lessonsContainer.innerHTML = lessons.map(lesson => `
+                <div class="lesson-item" onclick="aiLearningPlatform.showLessonDetails('${lesson.id}')">
+                    <div class="lesson-item-header">
+                        <h4 class="lesson-item-title">${this.escapeHtml(lesson.title)}</h4>
+                        <span class="lesson-item-difficulty ${lesson.difficulty.toLowerCase()}">${lesson.difficulty}</span>
+                    </div>
+                    <p class="lesson-item-description">${this.escapeHtml(lesson.description)}</p>
+                    <div class="lesson-item-meta">
+                        <span class="lesson-duration">⏱️ ${lesson.duration}</span>
+                        <span class="lesson-order">📚 Lesson ${lesson.order}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show the modal
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        this.showToast(`Loaded ${lessons.length} lessons for ${subject.name}`, 'success');
+    }
+
+    createSubjectDetailsModal() {
+        const modal = document.createElement('div');
+        modal.id = 'subject-details-modal';
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content subject-details-modal">
+                <div class="modal-header">
+                    <h3 id="subject-details-title">Subject Details</h3>
+                    <button class="modal-close" onclick="aiLearningPlatform.closeSubjectDetailsModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="subject-details-info">
+                        <p id="subject-details-description">Subject description will appear here.</p>
+                        <div class="subject-meta">
+                            <span id="subject-lessons-count" class="subject-lessons">
+                                <i class="fas fa-play-circle"></i> 0 lessons
+                            </span>
+                        </div>
+                    </div>
+                    <div class="subject-lessons-section">
+                        <h4>Available Lessons</h4>
+                        <div id="subject-lessons-list" class="lessons-list">
+                            <!-- Lessons will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="aiLearningPlatform.closeSubjectDetailsModal()">Close</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        return modal;
+    }
+
+    closeSubjectDetailsModal() {
+        const modal = document.getElementById('subject-details-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
     }
 
     showLessonDetails(lessonId) {
