@@ -26,12 +26,15 @@ const DATA_FILES = {
 app.use(cors({
     origin: [
         'http://localhost:3000',
+        'http://127.0.0.1:3000',
         'https://yourusername.github.io',
-        'https://*.github.io',
-        'https://*.vercel.app',
-        'https://*.netlify.app'
+        /^https:\/\/.*\.github\.io$/,
+        /^https:\/\/.*\.vercel\.app$/,
+        /^https:\/\/.*\.netlify\.app$/
     ],
-    credentials: true
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 // Enhanced JSON parsing with error handling
 app.use(bodyParser.json({ 
@@ -49,7 +52,9 @@ app.use(bodyParser.json({
 }));
 
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-app.use(express.static('public'));
+
+// Serve static files from current directory
+app.use(express.static(__dirname));
 
 // Ensure data directory exists
 fs.ensureDirSync(DATA_DIR);
@@ -1325,7 +1330,7 @@ const calculateDifficultyDistribution = (lessons, completedLessons) => {
 
 // Serve the main HTML file
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Error handling middleware

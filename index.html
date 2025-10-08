@@ -651,83 +651,129 @@
     <!-- JavaScript -->
     <script src="script.js"></script>
     
-    <!-- Fallback script to ensure basic functionality -->
+    <!-- Debug and fallback script -->
     <script>
-        // Show debug panel
+        // Show debug panel initially
         const debugPanel = document.getElementById('debug-panel');
-        debugPanel.style.display = 'block';
+        if (debugPanel) {
+            debugPanel.style.display = 'block';
+        }
         
         // Update debug status
         function updateDebugStatus(message) {
-            document.getElementById('debug-status').textContent = message;
+            const statusEl = document.getElementById('debug-status');
+            if (statusEl) statusEl.textContent = message;
         }
         
         function updateDebugButtons(message) {
-            document.getElementById('debug-buttons').textContent = message;
+            const buttonsEl = document.getElementById('debug-buttons');
+            if (buttonsEl) buttonsEl.textContent = message;
         }
         
         function updateDebugAPI(message) {
-            document.getElementById('debug-api').textContent = message;
+            const apiEl = document.getElementById('debug-api');
+            if (apiEl) apiEl.textContent = message;
         }
         
-        // Test API connection
-        fetch('/api/subjects')
-            .then(response => response.json())
-            .then(data => {
-                updateDebugAPI(`API: ✅ Connected (${data.length} subjects)`);
-            })
-            .catch(error => {
+        // Test API connection with better error handling
+        async function testApiConnection() {
+            try {
+                const response = await fetch('/api/health', {
+                    method: 'GET',
+                    timeout: 3000
+                });
+                if (response.ok) {
+                    updateDebugAPI('API: ✅ Connected');
+                    return true;
+                } else {
+                    updateDebugAPI('API: ❌ Server error');
+                    return false;
+                }
+            } catch (error) {
                 updateDebugAPI('API: ❌ Connection failed');
-            });
+                return false;
+            }
+        }
         
-        // Fallback initialization
+        // Initialize debug panel
+        updateDebugStatus('Initializing...');
+        updateDebugButtons('Buttons: Checking...');
+        updateDebugAPI('API: Checking...');
+        
+        // Test API connection
+        testApiConnection();
+        
+        // Check initialization status
         setTimeout(() => {
             if (!window.aiLearningPlatform) {
-                console.error('❌ AI Learning Platform failed to initialize');
-                updateDebugStatus('❌ Main app failed to initialize');
+                console.warn('⚠️ AI Learning Platform not yet initialized, waiting...');
+                updateDebugStatus('⏳ Waiting for app initialization...');
                 
-                // Add basic click handlers as fallback
-                const loginBtn = document.getElementById('login-btn');
-                const registerBtn = document.getElementById('register-btn');
-                
-                if (loginBtn) {
-                    loginBtn.addEventListener('click', () => {
-                        alert('Login button clicked! (Fallback handler)');
-                    });
-                }
-                
-                if (registerBtn) {
-                    registerBtn.addEventListener('click', () => {
-                        alert('Register button clicked! (Fallback handler)');
-                    });
-                    updateDebugButtons('Buttons: ✅ Fallback handlers added');
-                } else {
-                    updateDebugButtons('Buttons: ❌ Buttons not found');
-                }
-                
-                // Add navigation fallback
-                const navLinks = document.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        const section = e.target.closest('.nav-link').dataset.section;
-                        alert(`Navigation clicked: ${section} (Fallback handler)`);
-                    });
-                });
-                
-                if (navLinks.length > 0) {
-                    updateDebugButtons(`Buttons: ✅ ${navLinks.length} nav links with fallback`);
-                }
+                // Wait a bit longer for the app to initialize
+                setTimeout(() => {
+                    if (!window.aiLearningPlatform) {
+                        console.error('❌ AI Learning Platform failed to initialize');
+                        updateDebugStatus('❌ Main app failed to initialize');
+                        updateDebugButtons('Buttons: ❌ App not found');
+                        
+                        // Add basic fallback handlers
+                        addFallbackHandlers();
+                    }
+                }, 2000);
             } else {
                 updateDebugStatus('✅ Main app initialized');
                 updateDebugButtons('Buttons: ✅ Main app handlers active');
+                
+                // Hide debug panel after successful initialization
+                setTimeout(() => {
+                    if (debugPanel) {
+                        debugPanel.style.display = 'none';
+                    }
+                }, 2000);
             }
-        }, 1000);
+        }, 500);
         
-        // Hide debug panel after 5 seconds
+        // Fallback handlers for when main app fails to load
+        function addFallbackHandlers() {
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    alert('Login functionality requires the main app to be loaded properly.');
+                });
+            }
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', () => {
+                    alert('Registration functionality requires the main app to be loaded properly.');
+                });
+                updateDebugButtons('Buttons: ✅ Fallback handlers added');
+            } else {
+                updateDebugButtons('Buttons: ❌ Buttons not found');
+            }
+            
+            // Add navigation fallback
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = e.target.closest('.nav-link').dataset.section;
+                    alert(`Navigation to ${section} requires the main app to be loaded properly.`);
+                });
+            });
+            
+            if (navLinks.length > 0) {
+                updateDebugButtons(`Buttons: ✅ ${navLinks.length} nav links with fallback`);
+            }
+        }
+        
+        // Hide debug panel after 10 seconds regardless
         setTimeout(() => {
-            debugPanel.style.display = 'none';
-        }, 5000);
+            if (debugPanel && debugPanel.style.display !== 'none') {
+                debugPanel.style.display = 'none';
+            }
+        }, 10000);
     </script>
 </body>
 </html>

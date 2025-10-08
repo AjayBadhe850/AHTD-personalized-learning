@@ -65,7 +65,10 @@ class AILearningPlatform {
             }, 1000);
         }
         
-        console.log('🎉 AI Learning Platform initialized successfully!');
+        // Hide debug panel after successful initialization
+        this.hideDebugPanel();
+        
+        console.log('✅ App initialized successfully');
     }
 
     bindEvents() {
@@ -281,19 +284,41 @@ class AILearningPlatform {
                 // Load demo data for GitHub Pages
                 this.loadDemoData();
             } else {
-                // Load real data from API
-                await Promise.all([
-                    this.loadSubjects(),
-                    this.loadLessons(),
-                    this.loadStudents(),
-                    this.loadSyllabi(),
-                    this.loadRecommendations(),
-                    this.loadAnalytics()
-                ]);
+                // Test API connection first
+                const isApiAvailable = await this.testApiConnection();
+                if (isApiAvailable) {
+                    // Load real data from API
+                    await Promise.all([
+                        this.loadSubjects(),
+                        this.loadLessons(),
+                        this.loadStudents(),
+                        this.loadSyllabi(),
+                        this.loadRecommendations(),
+                        this.loadAnalytics()
+                    ]);
+                } else {
+                    // Fall back to demo data if API is not available
+                    console.log('⚠️ API not available, falling back to demo data');
+                    this.loadDemoData();
+                }
             }
         } catch (error) {
             console.error('Error loading initial data:', error);
-            this.showToast('Failed to load data. Please check your connection.', 'error');
+            console.log('⚠️ Falling back to demo data due to error');
+            this.loadDemoData();
+        }
+    }
+
+    async testApiConnection() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/api/health`, {
+                method: 'GET',
+                timeout: 3000
+            });
+            return response.ok;
+        } catch (error) {
+            console.log('API connection test failed:', error.message);
+            return false;
         }
     }
 
@@ -866,6 +891,101 @@ class AILearningPlatform {
         this.saveCurrentStudent();
         this.updateDashboardProfile(null);
         this.showToast('Logged out successfully! (Demo mode)', 'success');
+    }
+
+    // Hide debug panel after successful initialization
+    hideDebugPanel() {
+        const debugPanel = document.getElementById('debug-panel');
+        if (debugPanel) {
+            debugPanel.style.display = 'none';
+        }
+    }
+
+    // Toast notification system
+    showToast(message, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        
+        const icon = type === 'success' ? 'fa-check-circle' : 
+                    type === 'error' ? 'fa-exclamation-circle' : 
+                    type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+
+        toast.innerHTML = `
+            <i class="fas ${icon}"></i>
+            <span class="toast-message">${message}</span>
+            <button class="toast-close" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 5000);
+    }
+
+    // Utility methods
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    formatTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = Math.floor(minutes % 60);
+        return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+    }
+
+    formatTimeAgo(dateString) {
+        if (!dateString) return 'Never';
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        return `${diffDays}d ago`;
+    }
+
+    formatDate(dateString) {
+        if (!dateString) return 'Unknown';
+        return new Date(dateString).toLocaleDateString();
+    }
+
+    toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Update theme toggle button icon
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            const icon = themeToggle.querySelector('i');
+            if (icon) {
+                icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+        }
+    }
+
+    closeModal() {
+        const modal = document.getElementById('lesson-modal');
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
     }
 
     async trackActivity(activityType, data) {
@@ -1584,9 +1704,323 @@ class AILearningPlatform {
         return new Date(dateString).toLocaleDateString();
     }
 
-    // ... (include all other existing methods from the previous script)
-    // Due to length constraints, I'm including the essential new methods
-    // The rest of the methods (renderSubjects, renderLessons, etc.) remain the same as before
+    // Render methods for different sections
+    renderSubjects() {
+        const container = document.getElementById('subjects-grid');
+        if (!container) return;
+
+        if (this.subjects.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <h3>No subjects available</h3>
+                    <p>Subjects will appear here once they are loaded</p>
+                </div>
+            `;
+            return;
+        }
+
+        const subjectsHTML = this.subjects.map(subject => `
+            <div class="subject-card" onclick="aiLearningPlatform.showSubjectDetails('${subject.id}')">
+                <div class="subject-image">
+                    <i class="fas fa-${subject.icon || 'book'}"></i>
+                </div>
+                <div class="subject-content">
+                    <h3 class="subject-title">${this.escapeHtml(subject.name)}</h3>
+                    <p class="subject-description">${this.escapeHtml(subject.description)}</p>
+                    <div class="subject-meta">
+                        <span class="subject-lessons">
+                            <i class="fas fa-play-circle"></i>
+                            ${this.lessons.filter(l => l.subjectId === subject.id).length} lessons
+                        </span>
+                        <span class="subject-difficulty">
+                            <i class="fas fa-signal"></i>
+                            ${subject.difficulty || 'Mixed'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        container.innerHTML = subjectsHTML;
+    }
+
+    renderLessons() {
+        const container = document.getElementById('lessons-grid');
+        if (!container) return;
+
+        if (this.lessons.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-play-circle"></i>
+                    <h3>No lessons available</h3>
+                    <p>Lessons will appear here once they are loaded</p>
+                </div>
+            `;
+            return;
+        }
+
+        const lessonsHTML = this.lessons.map(lesson => {
+            const subject = this.subjects.find(s => s.id === lesson.subjectId);
+            const isCompleted = this.progress.some(p => p.lessonId === lesson.id && p.completed);
+            
+            return `
+                <div class="lesson-card" onclick="aiLearningPlatform.showLessonDetails('${lesson.id}')">
+                    <div class="lesson-header">
+                        <h3 class="lesson-title">${this.escapeHtml(lesson.title)}</h3>
+                        <p class="lesson-description">${this.escapeHtml(lesson.description)}</p>
+                    </div>
+                    <div class="lesson-footer">
+                        <div class="lesson-meta">
+                            <span class="lesson-difficulty">
+                                <i class="fas fa-signal"></i>
+                                ${lesson.difficulty}
+                            </span>
+                            <span class="lesson-duration">
+                                <i class="fas fa-clock"></i>
+                                ${lesson.duration}
+                            </span>
+                        </div>
+                        <span class="lesson-status ${isCompleted ? 'completed' : 'incomplete'}">
+                            ${isCompleted ? 'Completed' : 'Not Started'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = lessonsHTML;
+    }
+
+    renderRecommendations() {
+        const container = document.getElementById('recommendations-grid');
+        if (!container) return;
+
+        if (this.recommendations.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-lightbulb"></i>
+                    <h3>No recommendations available</h3>
+                    <p>AI recommendations will appear here based on your progress</p>
+                </div>
+            `;
+            return;
+        }
+
+        const recommendationsHTML = this.recommendations.map(rec => {
+            const lesson = this.lessons.find(l => l.id === rec.lessonId);
+            if (!lesson) return '';
+
+            return `
+                <div class="recommendation-card">
+                    <div class="recommendation-content">
+                        <div class="recommendation-badge">
+                            <i class="fas fa-robot"></i>
+                            AI Recommended
+                        </div>
+                        <h3>${this.escapeHtml(lesson.title)}</h3>
+                        <p>${this.escapeHtml(lesson.description)}</p>
+                        <div class="lesson-meta">
+                            <span class="lesson-difficulty">${lesson.difficulty}</span>
+                            <span class="lesson-duration">${lesson.duration}</span>
+                        </div>
+                        <p class="recommendation-reason">${this.escapeHtml(rec.reason)}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = recommendationsHTML;
+    }
+
+    updateDashboard() {
+        // Update dashboard statistics
+        const totalLessonsEl = document.getElementById('total-lessons');
+        const completedLessonsEl = document.getElementById('completed-lessons');
+        const timeSpentEl = document.getElementById('time-spent');
+        const averageScoreEl = document.getElementById('average-score');
+
+        if (totalLessonsEl) totalLessonsEl.textContent = this.lessons.length;
+        if (completedLessonsEl) {
+            const completed = this.progress.filter(p => p.completed).length;
+            completedLessonsEl.textContent = completed;
+        }
+        if (timeSpentEl) {
+            const totalTime = this.progress.reduce((sum, p) => sum + (p.timeSpent || 0), 0);
+            timeSpentEl.textContent = this.formatTime(totalTime / 60);
+        }
+        if (averageScoreEl) {
+            const completedProgress = this.progress.filter(p => p.completed && p.score);
+            const avgScore = completedProgress.length > 0 
+                ? Math.round(completedProgress.reduce((sum, p) => sum + p.score, 0) / completedProgress.length)
+                : 0;
+            averageScoreEl.textContent = `${avgScore}%`;
+        }
+    }
+
+    filterLessons() {
+        const searchTerm = document.getElementById('lesson-search')?.value.toLowerCase() || '';
+        const subjectFilter = document.getElementById('subject-filter')?.value || '';
+        const difficultyFilter = document.getElementById('difficulty-filter')?.value || '';
+
+        const filteredLessons = this.lessons.filter(lesson => {
+            const matchesSearch = !searchTerm || 
+                lesson.title.toLowerCase().includes(searchTerm) ||
+                lesson.description.toLowerCase().includes(searchTerm);
+            
+            const matchesSubject = !subjectFilter || lesson.subjectId === subjectFilter;
+            const matchesDifficulty = !difficultyFilter || lesson.difficulty === difficultyFilter;
+
+            return matchesSearch && matchesSubject && matchesDifficulty;
+        });
+
+        // Update the lessons grid with filtered results
+        const container = document.getElementById('lessons-grid');
+        if (!container) return;
+
+        if (filteredLessons.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>No lessons found</h3>
+                    <p>Try adjusting your search or filter criteria</p>
+                </div>
+            `;
+            return;
+        }
+
+        const lessonsHTML = filteredLessons.map(lesson => {
+            const subject = this.subjects.find(s => s.id === lesson.subjectId);
+            const isCompleted = this.progress.some(p => p.lessonId === lesson.id && p.completed);
+            
+            return `
+                <div class="lesson-card" onclick="aiLearningPlatform.showLessonDetails('${lesson.id}')">
+                    <div class="lesson-header">
+                        <h3 class="lesson-title">${this.escapeHtml(lesson.title)}</h3>
+                        <p class="lesson-description">${this.escapeHtml(lesson.description)}</p>
+                    </div>
+                    <div class="lesson-footer">
+                        <div class="lesson-meta">
+                            <span class="lesson-difficulty">${lesson.difficulty}</span>
+                            <span class="lesson-duration">${lesson.duration}</span>
+                        </div>
+                        <span class="lesson-status ${isCompleted ? 'completed' : 'incomplete'}">
+                            ${isCompleted ? 'Completed' : 'Not Started'}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = lessonsHTML;
+    }
+
+    populateSubjectFilter() {
+        const filter = document.getElementById('subject-filter');
+        if (!filter) return;
+
+        filter.innerHTML = '<option value="">All Subjects</option>';
+        this.subjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = subject.name;
+            filter.appendChild(option);
+        });
+    }
+
+    showSubjectDetails(subjectId) {
+        const subject = this.subjects.find(s => s.id === subjectId);
+        if (!subject) return;
+
+        this.showToast(`Viewing ${subject.name} details`, 'info');
+        // Could implement a modal or navigate to subject page
+    }
+
+    showLessonDetails(lessonId) {
+        const lesson = this.lessons.find(l => l.id === lessonId);
+        if (!lesson) return;
+
+        // Show lesson modal
+        const modal = document.getElementById('lesson-modal');
+        if (modal) {
+            document.getElementById('modal-lesson-title').textContent = lesson.title;
+            document.getElementById('modal-lesson-description').textContent = lesson.description;
+            document.getElementById('modal-lesson-difficulty').textContent = lesson.difficulty;
+            document.getElementById('modal-lesson-duration').textContent = lesson.duration;
+            document.getElementById('modal-lesson-content').innerHTML = `<p>${lesson.content}</p>`;
+            
+            const subject = this.subjects.find(s => s.id === lesson.subjectId);
+            document.getElementById('modal-lesson-subject').textContent = subject?.name || 'Unknown';
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    markLessonComplete() {
+        const modal = document.getElementById('lesson-modal');
+        if (!modal) return;
+
+        const lessonId = modal.dataset.lessonId;
+        if (!lessonId) return;
+
+        // Update progress
+        const existingProgress = this.progress.find(p => p.lessonId === lessonId);
+        if (existingProgress) {
+            existingProgress.completed = true;
+            existingProgress.score = 100;
+        } else {
+            this.progress.push({
+                lessonId: lessonId,
+                completed: true,
+                score: 100,
+                timeSpent: 0,
+                createdAt: new Date().toISOString()
+            });
+        }
+
+        this.saveProgressToStorage();
+        this.updateDashboard();
+        this.showToast('Lesson marked as complete!', 'success');
+        this.closeModal();
+    }
+
+    markLessonIncomplete() {
+        const modal = document.getElementById('lesson-modal');
+        if (!modal) return;
+
+        const lessonId = modal.dataset.lessonId;
+        if (!lessonId) return;
+
+        // Update progress
+        const existingProgress = this.progress.find(p => p.lessonId === lessonId);
+        if (existingProgress) {
+            existingProgress.completed = false;
+        }
+
+        this.saveProgressToStorage();
+        this.updateDashboard();
+        this.showToast('Lesson marked as incomplete', 'info');
+        this.closeModal();
+    }
+
+    loadProgressFromStorage() {
+        try {
+            const stored = localStorage.getItem('learningProgress');
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error loading progress:', error);
+            return [];
+        }
+    }
+
+    saveProgressToStorage() {
+        try {
+            localStorage.setItem('learningProgress', JSON.stringify(this.progress));
+        } catch (error) {
+            console.error('Error saving progress:', error);
+        }
+    }
 }
 
 // Global functions for onclick handlers
