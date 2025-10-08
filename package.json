@@ -4,9 +4,7 @@
   "description": "Authentication system for the AI Learning Platform",
   "main": "auth-server.js",
   "scripts": {
-    "start": "npm run start:auth",
-    "start:auth": "node auth-server.js",
-    "start:main": "node app-server.js",
+    "start": "node server.js",
     "test": "node test-auth.js"
   },
   "keywords": [

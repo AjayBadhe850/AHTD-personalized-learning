@@ -143,5 +143,49 @@
     "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
     "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
     "status": "active"
+  },
+  {
+    "id": "1759923394396",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T11:36:34.396Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "status": "active"
+  },
+  {
+    "id": "1759923458580",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T11:37:38.580Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "status": "active"
+  },
+  {
+    "id": "1759923544010",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T11:39:04.010Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
+  },
+  {
+    "id": "1759924581808",
+    "studentId": "1759924570356",
+    "studentName": "Nikhitha",
+    "loginTime": "2025-10-08T11:56:21.808Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
   }
 ]

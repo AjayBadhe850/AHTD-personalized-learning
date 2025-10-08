@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs-extra');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -284,9 +285,9 @@ app.post('/api/students/register', (req, res) => {
     const newStudent = {
         id: Date.now().toString(),
         name,
-        email,
+        email, 
         username: username || email.split('@')[0],
-        password: password || 'default123', // In production, this should be hashed
+        password: password ? bcrypt.hashSync(password, 10) : bcrypt.hashSync('default123', 10), // Hash the password
         grade: grade || null,
         interests: interests || [],
         learningGoals: learningGoals || '',
@@ -1443,9 +1444,23 @@ app.post('/api/login', async (req, res) => {
     }
     
     const students = readData('students');
-    const student = students.find(s => s.username === username && s.password === password);
+    const student = students.find(s => s.username === username);
     
     if (!student) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    // Check password - handle both hashed and plain text passwords
+    let passwordValid = false;
+    try {
+        // Try bcrypt comparison first (for hashed passwords)
+        passwordValid = bcrypt.compareSync(password, student.password);
+    } catch (error) {
+        // If bcrypt fails, try plain text comparison (for demo passwords)
+        passwordValid = (password === student.password);
+    }
+    
+    if (!passwordValid) {
         return res.status(401).json({ error: 'Invalid username or password' });
     }
     
