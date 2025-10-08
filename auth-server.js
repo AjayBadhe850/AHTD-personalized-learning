@@ -28,31 +28,42 @@ app.use(cors({
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// Serve static files
-app.use(express.static(__dirname));
-
 // Database setup
 const dbPath = path.join(__dirname, 'users.db');
 let db;
+const saltRounds = 10;
 
-// Initialize database connection
-function initDatabase() {
+// Helper function to run SQL queries with Promises
+function run(sql, params = []) {
     return new Promise((resolve, reject) => {
-        db = new sqlite3.Database(dbPath, (err) => {
+        db.run(sql, params, function (err) {
             if (err) {
-                console.error('❌ Error opening database:', err.message);
+                console.error('Error running sql ' + sql);
+                console.error(err);
                 reject(err);
             } else {
-                console.log('✅ Connected to SQLite database');
-                initializeDatabase();
-                resolve();
+                resolve({ id: this.lastID });
             }
         });
     });
 }
 
-// Initialize database with users table
-function initializeDatabase() {
+// Helper function to get a single row with Promises
+function get(sql, params = []) {
+    return new Promise((resolve, reject) => {
+        db.get(sql, params, (err, row) => {
+            if (err) {
+                console.error('Error running sql ' + sql);
+                console.error(err);
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+    });
+}
+
+async function initializeDatabase() {
     const createUsersTable = `
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,52 +74,27 @@ function initializeDatabase() {
             is_active BOOLEAN DEFAULT 1
         )
     `;
-
-    db.run(createUsersTable, (err) => {
-        if (err) {
-            console.error('❌ Error creating users table:', err.message);
-        } else {
-            console.log('✅ Users table ready');
-            createSampleUser();
-        }
-    });
+    await run(createUsersTable);
+    console.log('✅ Users table ready');
+    await createSampleUser();
 }
 
-// Create sample user for testing
-function createSampleUser() {
+async function createSampleUser() {
     const sampleUsername = 'demo';
     const samplePassword = 'password123';
     
-    // Check if demo user already exists
-    db.get('SELECT id FROM users WHERE username = ?', [sampleUsername], (err, row) => {
-        if (err) {
-            console.error('❌ Error checking for demo user:', err.message);
-        } else if (!row) {
-            // Create demo user
-            bcrypt.hash(samplePassword, 10, (err, hashedPassword) => {
-                if (err) {
-                    console.error('❌ Error hashing password:', err.message);
-                } else {
-                    db.run(
-                        'INSERT INTO users (username, password) VALUES (?, ?)',
-                        [sampleUsername, hashedPassword],
-                        function(err) {
-                            if (err) {
-                                console.error('❌ Error creating demo user:', err.message);
-                            } else {
-                                console.log('✅ Demo user created successfully');
-                                console.log('📝 Demo credentials:');
-                                console.log('   Username: demo');
-                                console.log('   Password: password123');
-                            }
-                        }
-                    );
-                }
-            });
-        } else {
-            console.log('✅ Demo user already exists');
-        }
-    });
+    const row = await get('SELECT id FROM users WHERE username = ?', [sampleUsername]);
+    if (row) {
+        console.log('✅ Demo user already exists');
+        return;
+    }
+    
+    const hashedPassword = await bcrypt.hash(samplePassword, saltRounds);
+    await run('INSERT INTO users (username, password) VALUES (?, ?)', [sampleUsername, hashedPassword]);
+    console.log('✅ Demo user created successfully');
+    console.log('📝 Demo credentials:');
+    console.log('   Username: demo');
+    console.log('   Password: password123');
 }
 
 // Authentication Routes
@@ -124,7 +110,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Register new user
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { username, password } = req.body;
     
     console.log('📝 Registration attempt for username:', username);
@@ -151,16 +137,8 @@ app.post('/api/register', (req, res) => {
         });
     }
     
-    // Check if username already exists
-    db.get('SELECT id FROM users WHERE username = ?', [username], (err, row) => {
-        if (err) {
-            console.error('❌ Database error during registration:', err.message);
-            return res.status(500).json({
-                success: false,
-                message: 'Database error occurred'
-            });
-        }
-        
+    try {
+        const row = await get('SELECT id FROM users WHERE username = ?', [username]);
         if (row) {
             console.log('❌ Registration failed: Username already exists');
             return res.status(400).json({
@@ -168,66 +146,40 @@ app.post('/api/register', (req, res) => {
                 message: 'Username already exists'
             });
         }
-        
-        // Hash password
-        bcrypt.hash(password, 10, (err, hashedPassword) => {
-            if (err) {
-                console.error('❌ Password hashing error:', err.message);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Internal server error'
-                });
-            }
-            
-            // Insert new user
-            db.run(
-                'INSERT INTO users (username, password) VALUES (?, ?)',
-                [username, hashedPassword],
-                function(err) {
-                    if (err) {
-                        console.error('❌ Error creating user:', err.message);
-                        return res.status(500).json({
-                            success: false,
-                            message: 'Failed to create user account'
-                        });
-                    }
-                    
-                    console.log('✅ User registered successfully:', username);
-                    res.status(201).json({
-                        success: true,
-                        message: 'User registered successfully',
-                        userId: this.lastID
-                    });
-                }
-            );
+
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const result = await run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hashedPassword]);
+
+        console.log('✅ User registered successfully:', username);
+        res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            userId: result.id
         });
-    });
+    } catch (error) {
+        console.error('❌ Database error during registration:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Database error occurred'
+        });
+    }
 });
 
 // Login user
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     
     console.log('🔐 Login attempt for username:', username);
     
-    // Validation
     if (!username || !password) {
         return res.status(400).json({
             success: false,
             message: 'Username and password are required'
         });
     }
-    
-    // Find user by username
-    db.get('SELECT * FROM users WHERE username = ? AND is_active = 1', [username], (err, user) => {
-        if (err) {
-            console.error('❌ Database error during login:', err.message);
-            return res.status(500).json({
-                success: false,
-                message: 'Database error occurred'
-            });
-        }
-        
+
+    try {
+        const user = await get('SELECT * FROM users WHERE username = ? AND is_active = 1', [username]);
         if (!user) {
             console.log('❌ Login failed: User not found');
             return res.status(401).json({
@@ -235,48 +187,35 @@ app.post('/api/login', (req, res) => {
                 message: 'Invalid username or password'
             });
         }
-        
-        // Verify password
-        bcrypt.compare(password, user.password, (err, isValidPassword) => {
-            if (err) {
-                console.error('❌ Password comparison error:', err.message);
-                return res.status(500).json({
-                    success: false,
-                    message: 'Internal server error'
-                });
-            }
-            
-            if (!isValidPassword) {
-                console.log('❌ Login failed: Invalid password');
-                return res.status(401).json({
-                    success: false,
-                    message: 'Invalid username or password'
-                });
-            }
-            
-            // Update last login
-            db.run(
-                'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
-                [user.id],
-                (err) => {
-                    if (err) {
-                        console.error('❌ Error updating last login:', err.message);
-                    }
-                }
-            );
-            
-            console.log('✅ Login successful for user:', username);
-            res.json({
-                success: true,
-                message: 'Login successful',
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    lastLogin: user.last_login
-                }
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            console.log('❌ Login failed: Invalid password');
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid username or password'
             });
+        }
+
+        await run('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?', [user.id]);
+
+        console.log('✅ Login successful for user:', username);
+        res.json({
+            success: true,
+            message: 'Login successful',
+            user: {
+                id: user.id,
+                username: user.username,
+                lastLogin: user.last_login
+            }
         });
-    });
+    } catch (error) {
+        console.error('❌ Database error during login:', error.message);
+        res.status(500).json({
+            success: false,
+            message: 'Database error occurred'
+        });
+    }
 });
 
 // Get user info (for dashboard)
@@ -312,7 +251,7 @@ app.get('/api/user/:username', (req, res) => {
 app.get('/api/users', (req, res) => {
     console.log('📊 Fetching all users');
     
-    db.all('SELECT id, username, created_at, last_login, is_active FROM users ORDER BY created_at DESC', (err, users) => {
+    db.all('SELECT id, username, created_at, last_login FROM users ORDER BY created_at DESC', (err, users) => {
         if (err) {
             console.error('❌ Database error:', err.message);
             return res.status(500).json({
@@ -326,33 +265,6 @@ app.get('/api/users', (req, res) => {
             users: users,
             count: users.length
         });
-    });
-});
-
-// Serve login page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
-});
-
-// Serve dashboard page
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dashboard.html'));
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error('❌ Server error:', err.stack);
-    res.status(500).json({ 
-        success: false,
-        error: 'Something went wrong!' 
-    });
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({ 
-        success: false,
-        error: 'Route not found' 
     });
 });
 
@@ -372,8 +284,17 @@ process.on('SIGINT', () => {
 // Start server
 async function startServer() {
     try {
-        await initDatabase();
-        
+        db = new sqlite3.Database(dbPath, (err) => {
+            if (err) {
+                console.error('❌ Error opening database:', err.message);
+                // If we can't open the DB, we can't start the server.
+                process.exit(1);
+            } else {
+                console.log('✅ Connected to SQLite database');
+            }
+        });
+
+        await initializeDatabase();
         app.listen(PORT, () => {
             console.log('🚀 AI Learning Platform Auth Server started');
             console.log(`🌐 Server running on http://localhost:${PORT}`);
@@ -390,6 +311,20 @@ async function startServer() {
         process.exit(1);
     }
 }
+
+// Error handling middleware (should be after all routes)
+app.use((err, req, res, next) => {
+    console.error('❌ Server error:', err.stack);
+    res.status(500).json({ 
+        success: false,
+        error: 'Something went wrong!' 
+    });
+});
+
+// 404 handler for API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ success: false, error: 'API route not found' });
+});
 
 startServer();
 

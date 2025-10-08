@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Logout Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .success {
+            background-color: #28a745;
+        }
+        .success:hover {
+            background-color: #1e7e34;
+        }
+        .warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        .warning:hover {
+            background-color: #e0a800;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .student-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .notification-log {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .notification-item {
+            background-color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Logout Notifications</h1>
+        
+        <div class="student-info">
+            <h3>📋 Test Student Information</h3>
+            <p><strong>Name:</strong> John Doe</p>
+            <p><strong>Parent Name:</strong> Jane Doe</p>
+            <p><strong>Parent Email:</strong> jane.doe@example.com</p>
+            <p><strong>Parent Phone:</strong> +1234567890</p>
+        </div>
+
+        <div class="test-section">
+            <h3>🔔 Test Notification System</h3>
+            <p>Click the button below to test the parent notification system:</p>
+            <button onclick="testNotification()" class="success">Send Test Logout Notification</button>
+            <div id="test-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>👤 Test Student Login/Logout</h3>
+            <p>Test the actual student login and logout process:</p>
+            <button onclick="loginStudent()" class="success">Login Student</button>
+            <button onclick="logoutStudent()" class="warning">Logout Student</button>
+            <div id="login-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 View Notification Logs</h3>
+            <button onclick="viewNotifications()" class="success">View All Notifications</button>
+            <div id="notifications" class="notification-log"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        const TEST_STUDENT_ID = 'test-student-1';
+
+        async function testNotification() {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Sending test notification...';
+
+            try {
+                const response = await fetch(`${API_BASE}/test/notification`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Test Notification Sent Successfully!</strong><br>
+                        Student: ${data.student}<br>
+                        Parent Email: ${data.parentEmail}<br>
+                        Parent Phone: ${data.parentPhone}<br>
+                        <em>Check the server console and notification logs for details.</em>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong> ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function loginStudent() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Logging in student...';
+
+            try {
+                const response = await fetch(`${API_BASE}/students/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: TEST_STUDENT_ID,
+                        deviceInfo: 'Test Device',
+                        browserInfo: 'Test Browser'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Student Logged In Successfully!</strong><br>
+                        Student: ${data.studentName}<br>
+                        Login Time: ${new Date(data.loginTime).toLocaleString()}<br>
+                        <em>Parent notification should have been sent.</em>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong> ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function logoutStudent() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Logging out student...';
+
+            try {
+                const response = await fetch(`${API_BASE}/students/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: TEST_STUDENT_ID,
+                        reason: 'Test logout from web interface'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Student Logged Out Successfully!</strong><br>
+                        Logout Time: ${new Date(data.logoutTime).toLocaleString()}<br>
+                        Session Duration: ${formatDuration(data.sessionDuration)}<br>
+                        <em>Parent notification with session summary should have been sent.</em>
+                    `;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong> ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function viewNotifications() {
+            const notificationsDiv = document.getElementById('notifications');
+            notificationsDiv.innerHTML = 'Loading notifications...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.length === 0) {
+                        notificationsDiv.innerHTML = '<p>No notifications found.</p>';
+                    } else {
+                        notificationsDiv.innerHTML = data.map(notification => `
+                            <div class="notification-item">
+                                <strong>${notification.type.toUpperCase()}</strong> - ${notification.recipient}<br>
+                                <small>${new Date(notification.timestamp).toLocaleString()}</small><br>
+                                ${notification.subject ? `<strong>Subject:</strong> ${notification.subject}<br>` : ''}
+                                <strong>Message:</strong> ${notification.message.replace(/\n/g, '<br>')}
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    notificationsDiv.innerHTML = `<p>Error loading notifications: ${data.error}</p>`;
+                }
+            } catch (error) {
+                notificationsDiv.innerHTML = `<p>Network error: ${error.message}</p>`;
+            }
+        }
+
+        function formatDuration(milliseconds) {
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes % 60}m`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds % 60}s`;
+            } else {
+                return `${seconds}s`;
+            }
+        }
+
+        // Load notifications on page load
+        window.onload = function() {
+            viewNotifications();
+        };
+    </script>
+</body>
+</html>

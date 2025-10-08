@@ -474,8 +474,8 @@
         function checkAuth() {
             const username = getUsername();
             if (!username || username === 'User') {
-                console.log('❌ No valid session found, redirecting to login');
-                window.location.href = 'http://localhost:3001/';
+                console.log('❌ No valid session found, redirecting to login at /');
+                window.location.href = '/';
                 return false;
             }
             return true;
@@ -486,7 +486,7 @@
             localStorage.removeItem('currentUser');
             localStorage.removeItem('userId');
             console.log('👋 User logged out');
-            window.location.href = 'http://localhost:3001/';
+            window.location.href = '/';
         }
 
         // Add click handler to logout button
@@ -532,4 +532,3 @@
     </script>
 </body>
 </html>
-

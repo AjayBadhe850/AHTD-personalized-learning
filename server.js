@@ -1026,10 +1026,24 @@ const calculateLearningStreak = (sessions) => {
 
 // Parent Notification System
 const sendParentNotification = (student, type, data) => {
-    if (!student.contactInfo.parentPhone && !student.contactInfo.parentEmail) {
-        console.log('No parent contact information available for notifications');
+    console.log(`🔔 Attempting to send ${type} notification for student: ${student.name}`);
+    
+    if (!student.contactInfo) {
+        console.log('❌ No contact information available for student');
         return;
     }
+    
+    if (!student.contactInfo.parentPhone && !student.contactInfo.parentEmail) {
+        console.log('❌ No parent contact information available for notifications');
+        console.log('Contact info:', student.contactInfo);
+        return;
+    }
+    
+    console.log('✅ Parent contact info found:', {
+        parentName: student.contactInfo.parentName,
+        parentEmail: student.contactInfo.parentEmail,
+        parentPhone: student.contactInfo.parentPhone
+    });
 
     let message = '';
     let subject = '';
@@ -1090,6 +1104,11 @@ const sendParentNotification = (student, type, data) => {
         sendEmail(student.contactInfo.parentEmail, subject, message);
     }
 
+    // Send WhatsApp notification (simulated)
+    if (student.contactInfo.parentPhone) {
+        sendWhatsApp(student.contactInfo.parentPhone, message);
+    }
+
     console.log(`Notification sent to parents of ${student.name}: ${type}`);
 };
 
@@ -1100,15 +1119,18 @@ const sendSMS = (phoneNumber, message) => {
     
     // Store notification in logs
     const notifications = readData('notifications') || [];
-    notifications.push({
+    const notification = {
         id: Date.now().toString(),
         type: 'sms',
         recipient: phoneNumber,
         message: message,
         timestamp: new Date().toISOString(),
         status: 'sent'
-    });
+    };
+    notifications.push(notification);
     writeData('notifications', notifications);
+    
+    console.log(`✅ SMS notification logged with ID: ${notification.id}`);
 };
 
 // Simulated Email sending function
@@ -1118,7 +1140,7 @@ const sendEmail = (email, subject, message) => {
     
     // Store notification in logs
     const notifications = readData('notifications') || [];
-    notifications.push({
+    const notification = {
         id: Date.now().toString(),
         type: 'email',
         recipient: email,
@@ -1126,8 +1148,32 @@ const sendEmail = (email, subject, message) => {
         message: message,
         timestamp: new Date().toISOString(),
         status: 'sent'
-    });
+    };
+    notifications.push(notification);
     writeData('notifications', notifications);
+    
+    console.log(`✅ Email notification logged with ID: ${notification.id}`);
+};
+
+// Simulated WhatsApp sending function
+const sendWhatsApp = (phoneNumber, message) => {
+    // In a real implementation, you would integrate with WhatsApp Business API
+    console.log(`📱 WhatsApp to ${phoneNumber}: ${message}`);
+    
+    // Store notification in logs
+    const notifications = readData('notifications') || [];
+    const notification = {
+        id: Date.now().toString(),
+        type: 'whatsapp',
+        recipient: phoneNumber,
+        message: message,
+        timestamp: new Date().toISOString(),
+        status: 'sent'
+    };
+    notifications.push(notification);
+    writeData('notifications', notifications);
+    
+    console.log(`✅ WhatsApp notification logged with ID: ${notification.id}`);
 };
 
 // Progress Tracking and Notifications
@@ -1339,6 +1385,213 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Get all notifications
+app.get('/api/notifications', (req, res) => {
+    const notifications = readData('notifications') || [];
+    res.json(notifications);
+});
+
+// Login with username/password
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    const students = readData('students');
+    const student = students.find(s => s.username === username && s.password === password);
+    
+    if (!student) {
+        return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    // Create session
+    const sessionId = Date.now().toString();
+    const loginTime = new Date().toISOString();
+    
+    // Add to login history
+    const loginRecord = {
+        id: sessionId,
+        loginTime: loginTime,
+        logoutTime: null,
+        sessionDuration: 0,
+        deviceInfo: req.headers['user-agent'] || 'Unknown Device',
+        browserInfo: req.headers['user-agent'] || 'Unknown Browser',
+        status: 'active',
+        activities: [],
+        lessonsAccessed: [],
+        pagesVisited: ['/login']
+    };
+    
+    student.loginHistory.push(loginRecord);
+    student.lastActive = loginTime;
+    
+    // Update global login logs
+    const loginLogs = readData('loginLogs') || [];
+    loginLogs.push({
+        id: sessionId,
+        studentId: student.id,
+        studentName: student.name,
+        loginTime: loginTime,
+        logoutTime: null,
+        sessionDuration: 0,
+        deviceInfo: loginRecord.deviceInfo,
+        browserInfo: loginRecord.browserInfo,
+        status: 'active'
+    });
+    
+    // Update data files
+    writeData('students', students);
+    writeData('loginLogs', loginLogs);
+    
+    // Send login notification to parents
+    sendParentNotification(student, 'login', {
+        loginTime: loginTime,
+        studentName: student.name,
+        deviceInfo: loginRecord.deviceInfo
+    });
+    
+    console.log(`✅ Student ${student.name} logged in successfully at ${loginTime}`);
+    
+    res.json({
+        message: 'Login successful',
+        student: {
+            id: student.id,
+            name: student.name,
+            email: student.email,
+            username: student.username,
+            grade: student.grade,
+            interests: student.interests,
+            learningGoals: student.learningGoals
+        },
+        sessionId: sessionId,
+        loginTime: loginTime
+    });
+});
+
+// Send credentials to specific phone number
+app.post('/api/send-credentials', (req, res) => {
+    const { phoneNumber } = req.body;
+    const targetPhone = phoneNumber || '+17396230359';
+    
+    const students = readData('students');
+    const demoStudent = students.find(s => s.id === 'demo-student-001');
+    
+    if (!demoStudent) {
+        return res.status(404).json({ error: 'Demo student not found' });
+    }
+    
+    const credentialsMessage = `🎓 AI Learning Platform - Demo Credentials
+
+👤 Username: ${demoStudent.username}
+🔑 Password: ${demoStudent.password}
+🌐 Website: http://localhost:3000
+
+📚 Available Lessons:
+• Mathematics (Algebra, Linear Equations, Quadratic Functions)
+• Science (Physics, Chemistry, Biology)
+• Programming (JavaScript, OOP, Data Structures)
+• Literature (Poetry, Shakespeare)
+• History (Ancient Civilizations, World Wars)
+
+💡 Features:
+• Personalized learning dashboard
+• Progress tracking
+• AI recommendations
+• Parent notifications
+
+Start learning now! 🚀`;
+
+    // Send SMS with credentials
+    sendSMS(targetPhone, credentialsMessage);
+    
+    // Also send a WhatsApp-style message (simulated)
+    const whatsappMessage = `🎓 *AI Learning Platform Demo Access*
+
+*Login Credentials:*
+👤 Username: \`${demoStudent.username}\`
+🔑 Password: \`${demoStudent.password}\`
+🌐 Website: http://localhost:3000
+
+*Quick Start:*
+1. Open the website
+2. Click "Login" button
+3. Enter credentials above
+4. Start learning!
+
+*Available Subjects:*
+📊 Mathematics
+🔬 Science  
+💻 Programming
+📖 Literature
+🏛️ History
+
+*Features:*
+✅ Personalized dashboard
+✅ Progress tracking
+✅ AI recommendations
+✅ Parent notifications
+
+Happy Learning! 🚀`;
+
+    // Store WhatsApp notification
+    const notifications = readData('notifications') || [];
+    notifications.push({
+        id: Date.now().toString(),
+        type: 'whatsapp',
+        recipient: targetPhone,
+        message: whatsappMessage,
+        timestamp: new Date().toISOString(),
+        status: 'sent'
+    });
+    writeData('notifications', notifications);
+    
+    console.log(`📱 Credentials sent to ${targetPhone}`);
+    console.log(`📱 WhatsApp message sent to ${targetPhone}`);
+    
+    res.json({ 
+        message: 'Credentials sent successfully',
+        phoneNumber: targetPhone,
+        username: demoStudent.username,
+        password: demoStudent.password,
+        website: 'http://localhost:3000'
+    });
+});
+
+// Test endpoint for parent notifications
+app.post('/api/test/notification', (req, res) => {
+    const students = readData('students');
+    const testStudent = students.find(s => s.id === 'test-student-1');
+    
+    if (!testStudent) {
+        return res.status(404).json({ error: 'Test student not found' });
+    }
+    
+    // Test logout notification
+    sendParentNotification(testStudent, 'logout', {
+        loginTime: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+        logoutTime: new Date().toISOString(),
+        sessionDuration: 3600000, // 1 hour
+        activities: [
+            { type: 'lesson_completed', lesson: 'Math Basics', score: 85 },
+            { type: 'quiz_taken', subject: 'Science', score: 92 }
+        ],
+        lessonsAccessed: ['Math Basics', 'Science Quiz'],
+        pagesVisited: ['/dashboard', '/lessons', '/progress'],
+        studentName: testStudent.name,
+        deviceInfo: 'Test Device',
+        logoutReason: 'Test logout'
+    });
+    
+    res.json({ 
+        message: 'Test notification sent to parents',
+        student: testStudent.name,
+        parentEmail: testStudent.contactInfo.parentEmail,
+        parentPhone: testStudent.contactInfo.parentPhone
+    });
+});
+
 // 404 handler
 app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
@@ -1350,4 +1603,5 @@ app.listen(PORT, () => {
     console.log(`🌐 CORS enabled for GitHub Pages deployment`);
     console.log(`📊 Analytics: GET /api/analytics`);
     console.log(`🎯 Recommendations: GET /api/recommendations`);
+    console.log(`🧪 Test notification: POST /api/test/notification`);
 });

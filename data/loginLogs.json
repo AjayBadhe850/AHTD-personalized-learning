@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1759910401865",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T08:00:01.865Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "status": "active"
+  },
+  {
+    "id": "1759910449838",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T08:00:49.838Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "status": "active"
+  },
+  {
+    "id": "1759910465830",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T08:01:05.830Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+    "status": "active"
+  },
+  {
+    "id": "1759910594413",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T08:03:14.413Z",
+    "logoutTime": "2025-10-08T08:06:24.079Z",
+    "sessionDuration": 189666,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "completed",
+    "logoutReason": "User logout"
+  }
+]

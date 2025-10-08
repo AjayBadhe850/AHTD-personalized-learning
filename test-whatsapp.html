@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test WhatsApp Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #128C7E;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .notification-log {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .notification-item {
+            background-color: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            border-left: 4px solid #25D366;
+        }
+        .notification-item.sms {
+            border-left-color: #007bff;
+        }
+        .notification-item.email {
+            border-left-color: #ffc107;
+        }
+        .notification-item.whatsapp {
+            border-left-color: #25D366;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Test WhatsApp Notifications</h1>
+        
+        <div class="test-section">
+            <h3>🧪 Test Logout Notification</h3>
+            <p>This will test the complete notification system including WhatsApp:</p>
+            <button onclick="testLogoutNotification()">Send Test Logout Notification</button>
+            <div id="test-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 View All Notifications</h3>
+            <button onclick="viewNotifications()">View All Notifications</button>
+            <div id="notifications" class="notification-log"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📱 Test Login/Logout Flow</h3>
+            <p>Test the complete login and logout flow:</p>
+            <button onclick="testLogin()">Test Login</button>
+            <button onclick="testLogout()">Test Logout</button>
+            <div id="flow-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        const TEST_STUDENT_ID = 'demo-student-001';
+
+        async function testLogoutNotification() {
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Sending test logout notification...';
+
+            try {
+                const response = await fetch(`${API_BASE}/test/notification`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Test Notification Sent Successfully!</strong><br>
+                        Student: ${data.student}<br>
+                        Parent Email: ${data.parentEmail}<br>
+                        Parent Phone: ${data.parentPhone}<br>
+                        <em>Check the notification logs below to see SMS, Email, and WhatsApp messages.</em>
+                    `;
+                    // Auto-refresh notifications
+                    setTimeout(viewNotifications, 1000);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Error:</strong> ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('flow-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Testing login...';
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'alex_demo',
+                        password: 'demo123'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Login Successful!</strong><br>
+                        Student: ${data.student.name}<br>
+                        Session ID: ${data.sessionId}<br>
+                        <em>Login notification sent to parents via SMS, Email, and WhatsApp.</em>
+                    `;
+                    setTimeout(viewNotifications, 1000);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Login Failed:</strong> ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function testLogout() {
+            const resultDiv = document.getElementById('flow-result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Testing logout...';
+
+            try {
+                const response = await fetch(`${API_BASE}/students/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        studentId: TEST_STUDENT_ID,
+                        reason: 'Test logout from WhatsApp test page'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <strong>✅ Logout Successful!</strong><br>
+                        Logout Time: ${new Date(data.logoutTime).toLocaleString()}<br>
+                        Session Duration: ${formatDuration(data.sessionDuration)}<br>
+                        <em>Logout notification sent to parents via SMS, Email, and WhatsApp.</em>
+                    `;
+                    setTimeout(viewNotifications, 1000);
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<strong>❌ Logout Failed:</strong> ${data.error}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `<strong>❌ Network Error:</strong> ${error.message}`;
+            }
+        }
+
+        async function viewNotifications() {
+            const notificationsDiv = document.getElementById('notifications');
+            notificationsDiv.innerHTML = 'Loading notifications...';
+
+            try {
+                const response = await fetch(`${API_BASE}/notifications`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.length === 0) {
+                        notificationsDiv.innerHTML = '<p>No notifications found.</p>';
+                    } else {
+                        // Sort by timestamp (newest first)
+                        const sortedNotifications = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                        
+                        notificationsDiv.innerHTML = sortedNotifications.map(notification => `
+                            <div class="notification-item ${notification.type}">
+                                <strong>${notification.type.toUpperCase()}</strong> - ${notification.recipient}<br>
+                                <small>${new Date(notification.timestamp).toLocaleString()}</small><br>
+                                ${notification.subject ? `<strong>Subject:</strong> ${notification.subject}<br>` : ''}
+                                <strong>Message:</strong> ${notification.message.replace(/\n/g, '<br>')}
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    notificationsDiv.innerHTML = `<p>Error loading notifications: ${data.error}</p>`;
+                }
+            } catch (error) {
+                notificationsDiv.innerHTML = `<p>Network error: ${error.message}</p>`;
+            }
+        }
+
+        function formatDuration(milliseconds) {
+            const seconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes % 60}m`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds % 60}s`;
+            } else {
+                return `${seconds}s`;
+            }
+        }
+
+        // Load notifications on page load
+        window.onload = function() {
+            viewNotifications();
+        };
+    </script>
+</body>
+</html>

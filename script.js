@@ -671,55 +671,88 @@ class AILearningPlatform {
         const formData = new FormData(form);
         
         const loginData = {
-            email: formData.get('email'),
-            name: formData.get('name')
+            username: formData.get('username'),
+            password: formData.get('password')
         };
 
         try {
+            console.log('🔍 API Base URL:', this.apiBaseUrl);
+            console.log('🔍 Login data:', loginData);
+            
             if (this.apiBaseUrl === 'demo') {
-                // Demo mode - find existing student or create new one
-                let student = this.students.find(s => s.email === loginData.email);
-                
-                if (!student) {
-                    // Create a new student for demo
-                    student = {
-                        id: Date.now().toString(),
-                        name: loginData.name,
-                        email: loginData.email,
-                        grade: 'High School',
-                        interests: ['mathematics', 'programming'],
-                        profilePic: null,
+                console.log('🔍 Using demo mode');
+                // Demo mode - use hardcoded demo student
+                if (loginData.username === 'alex_demo' && loginData.password === 'demo123') {
+                    const student = {
+                        id: 'demo-student-001',
+                        name: 'Alex Johnson',
+                        email: 'alex.johnson@demo.com',
+                        username: 'alex_demo',
+                        grade: '10th Grade',
+                        interests: ['Mathematics', 'Science', 'Programming', 'Physics'],
+                        learningGoals: 'Master advanced mathematics and prepare for engineering college',
                         totalLessonsCompleted: 0,
                         totalTimeSpent: 0,
                         averageTypingSpeed: 0
                     };
-                    this.students.push(student);
-                }
 
-                this.currentStudent = student;
-                this.saveCurrentStudent();
-                this.closeLoginModal();
-                this.showToast('Login successful! (Demo mode)', 'success');
-                
-                // Show welcome animation
-                setTimeout(() => {
-                    this.showWelcomeModal(student);
-                }, 500);
-                
-                // Update dashboard profile
-                this.updateDashboardProfile(student);
-                
-                // Update UI
-                this.updateLoginUI(true);
+                    this.currentStudent = student;
+                    this.saveCurrentStudent();
+                    this.closeLoginModal();
+                    this.showToast(`Welcome back, ${student.name}!`, 'success');
+                    
+                    // Show welcome animation
+                    setTimeout(() => {
+                        this.showWelcomeModal(student);
+                    }, 500);
+                    
+                    // Update dashboard profile
+                    this.updateDashboardProfile(student);
+                    
+                    // Update UI
+                    this.updateLoginUI(true);
+                } else {
+                    throw new Error('Invalid demo credentials. Use username: alex_demo, password: demo123');
+                }
                 
             } else {
-                // Real API call would go here
-                this.showToast('Login functionality requires backend deployment', 'info');
+                console.log('🔍 Using real API mode');
+                // Real API mode - use new login endpoint
+                console.log('🔍 Attempting real API login with:', loginData);
+                console.log('🔍 API Base URL:', this.apiBaseUrl);
+                
+                const response = await fetch(`${this.apiBaseUrl}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginData)
+                });
+
+                console.log('🔍 Response status:', response.status);
+                console.log('🔍 Response ok:', response.ok);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('🔍 Error response:', errorData);
+                    throw new Error(errorData.error || 'Login failed');
+                }
+
+                const result = await response.json();
+                console.log('🔍 Login successful:', result);
+                
+                this.currentStudent = result.student;
+                this.currentSession = result.sessionId;
+                
+                this.updateLoginUI(true);
+                this.closeLoginModal();
+                this.showToast(`Welcome back, ${result.student.name}!`, 'success');
+                this.updateDashboard();
             }
 
         } catch (error) {
             console.error('Login error:', error);
-            this.showToast('Login failed. Please try again.', 'error');
+            this.showToast(`Login failed: ${error.message}`, 'error');
         }
     }
 

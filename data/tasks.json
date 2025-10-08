@@ -1,0 +1,50 @@
+{
+  "tasks": [
+    {
+      "id": 1759863684148,
+      "title": "Welcome to Task Manager",
+      "description": "This is your first task! You can edit, complete, or delete it.",
+      "priority": "high",
+      "completed": false,
+      "createdAt": "2025-10-07T19:01:24.148Z",
+      "updatedAt": "2025-10-07T19:01:24.148Z"
+    },
+    {
+      "id": 1759863684153,
+      "title": "Learn about the features",
+      "description": "Explore the different priority levels, filtering options, and task management capabilities.",
+      "priority": "medium",
+      "completed": false,
+      "createdAt": "2025-10-07T19:01:24.153Z",
+      "updatedAt": "2025-10-07T19:01:24.153Z"
+    },
+    {
+      "id": 1759863684157,
+      "title": "Create your own tasks",
+      "description": "Start adding your personal tasks and organize them by priority.",
+      "priority": "low",
+      "completed": false,
+      "createdAt": "2025-10-07T19:01:24.157Z",
+      "updatedAt": "2025-10-07T19:01:24.157Z"
+    },
+    {
+      "id": 1759863684161,
+      "title": "Test the responsive design",
+      "description": "Try viewing this app on different screen sizes to see how it adapts.",
+      "priority": "medium",
+      "completed": false,
+      "createdAt": "2025-10-07T19:01:24.161Z",
+      "updatedAt": "2025-10-07T19:01:24.161Z"
+    },
+    {
+      "id": 1759863684164,
+      "title": "Explore the API",
+      "description": "Check out the RESTful API endpoints available at /api/tasks",
+      "priority": "high",
+      "completed": false,
+      "createdAt": "2025-10-07T19:01:24.164Z",
+      "updatedAt": "2025-10-07T19:01:24.164Z"
+    }
+  ],
+  "users": []
+}
