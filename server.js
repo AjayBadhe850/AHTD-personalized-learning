@@ -258,15 +258,12 @@ app.post('/api/students/register', (req, res) => {
     const { 
         name, 
         email, 
-        age, 
+        username,
+        password,
         grade, 
         interests, 
         learningGoals,
-        parentName,
-        parentEmail,
-        parentPhone,
-        emergencyContact,
-        address
+        contactInfo
     } = req.body;
     
     if (!name || !email) {
@@ -277,23 +274,27 @@ app.post('/api/students/register', (req, res) => {
     
     // Check if student already exists
     if (students.find(student => student.email === email)) {
-        return res.status(400).json({ error: 'Student already registered' });
+        return res.status(400).json({ error: 'Student already registered with this email' });
+    }
+    
+    if (username && students.find(student => student.username === username)) {
+        return res.status(400).json({ error: 'Username already taken' });
     }
 
     const newStudent = {
         id: Date.now().toString(),
         name,
         email,
-        age: age || null,
+        username: username || email.split('@')[0],
+        password: password || 'default123', // In production, this should be hashed
         grade: grade || null,
         interests: interests || [],
-        learningGoals: learningGoals || [],
-        contactInfo: {
-            parentName: parentName || '',
-            parentEmail: parentEmail || '',
-            parentPhone: parentPhone || '',
-            emergencyContact: emergencyContact || '',
-            address: address || ''
+        learningGoals: learningGoals || '',
+        contactInfo: contactInfo || {
+            parentName: '',
+            parentEmail: '',
+            parentPhone: '',
+            address: ''
         },
         registeredAt: new Date().toISOString(),
         lastActive: new Date().toISOString(),

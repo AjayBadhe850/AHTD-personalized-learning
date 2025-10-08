@@ -107,9 +107,51 @@
           "/login"
         ],
         "logoutReason": "User logout"
+      },
+      {
+        "id": "1759916094132",
+        "loginTime": "2025-10-08T09:34:54.132Z",
+        "logoutTime": null,
+        "sessionDuration": 0,
+        "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+        "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+        "status": "active",
+        "activities": [],
+        "lessonsAccessed": [],
+        "pagesVisited": [
+          "/login"
+        ]
+      },
+      {
+        "id": "1759917792883",
+        "loginTime": "2025-10-08T10:03:12.883Z",
+        "logoutTime": null,
+        "sessionDuration": 0,
+        "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+        "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+        "status": "active",
+        "activities": [],
+        "lessonsAccessed": [],
+        "pagesVisited": [
+          "/login"
+        ]
+      },
+      {
+        "id": "1759918598584",
+        "loginTime": "2025-10-08T10:16:38.584Z",
+        "logoutTime": null,
+        "sessionDuration": 0,
+        "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+        "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
+        "status": "active",
+        "activities": [],
+        "lessonsAccessed": [],
+        "pagesVisited": [
+          "/login"
+        ]
       }
     ],
-    "lastActive": "2025-10-08T08:24:57.996Z",
+    "lastActive": "2025-10-08T10:16:38.584Z",
     "totalLessonsCompleted": 0,
     "averageScore": 0,
     "createdAt": "2024-01-01T00:00:00.000Z",
@@ -142,5 +184,32 @@
     "averageScore": 0,
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "1759918735285",
+    "name": "Test User",
+    "email": "test@example.com",
+    "age": null,
+    "grade": "9th Grade",
+    "interests": [
+      "Math",
+      "Science"
+    ],
+    "learningGoals": "Test goals",
+    "contactInfo": {
+      "parentName": "",
+      "parentEmail": "",
+      "parentPhone": "",
+      "emergencyContact": "",
+      "address": ""
+    },
+    "registeredAt": "2025-10-08T10:18:55.285Z",
+    "lastActive": "2025-10-08T10:18:55.285Z",
+    "totalTimeSpent": 0,
+    "totalLessonsCompleted": 0,
+    "averageTypingSpeed": 0,
+    "totalSessions": 0,
+    "loginHistory": [],
+    "performanceHistory": []
   }
 ]

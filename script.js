@@ -1262,16 +1262,41 @@ class AILearningPlatform {
         const inputElement = document.getElementById('typing-input');
         const startBtn = document.getElementById('start-typing-test');
 
+        // Validate elements exist
+        if (!textElement || !inputElement || !startBtn) {
+            console.error('Typing test elements not found');
+            this.showToast('Typing test elements not found', 'error');
+            return;
+        }
+
+        // Check if text is available
+        if (!textElement.textContent || textElement.textContent.trim() === '') {
+            console.error('No typing text available');
+            this.showToast('No typing text available', 'error');
+            return;
+        }
+
         this.typingTest.isActive = true;
         this.typingTest.startTime = Date.now();
-        this.typingTest.text = textElement.textContent;
+        this.typingTest.text = textElement.textContent.trim();
         this.typingTest.currentIndex = 0;
         this.typingTest.errors = 0;
+        this.typingTest.wpm = 0;
+        this.typingTest.accuracy = 0;
 
         inputElement.disabled = false;
+        inputElement.value = '';
         inputElement.focus();
         startBtn.textContent = 'Test in Progress...';
         startBtn.disabled = true;
+
+        // Initialize display
+        this.updateTypingStats();
+
+        // Start updating stats
+        this.typingStatsInterval = setInterval(() => {
+            this.updateTypingStats();
+        }, 100);
 
         // Highlight current character
         this.highlightCurrentCharacter();
@@ -1322,25 +1347,59 @@ class AILearningPlatform {
         const elapsed = (Date.now() - this.typingTest.startTime) / 1000;
         const wordsTyped = this.typingTest.currentIndex / 5; // Average word length
         const wpm = Math.round((wordsTyped / elapsed) * 60);
-        const accuracy = Math.round(((this.typingTest.currentIndex - this.typingTest.errors) / this.typingTest.currentIndex) * 100);
+        
+        // Fix division by zero error for accuracy calculation
+        let accuracy = 0;
+        if (this.typingTest.currentIndex > 0) {
+            accuracy = Math.round(((this.typingTest.currentIndex - this.typingTest.errors) / this.typingTest.currentIndex) * 100);
+            // Ensure accuracy is not negative
+            accuracy = Math.max(0, accuracy);
+        }
 
-        document.getElementById('wpm-display').textContent = wpm || 0;
-        document.getElementById('accuracy-display').textContent = `${accuracy || 0}%`;
-        document.getElementById('time-display').textContent = `${Math.round(elapsed)}s`;
+        // Update display elements with proper fallbacks
+        const wpmDisplay = document.getElementById('wpm-display');
+        const accuracyDisplay = document.getElementById('accuracy-display');
+        const timeDisplay = document.getElementById('time-display');
+        
+        if (wpmDisplay) wpmDisplay.textContent = wpm || 0;
+        if (accuracyDisplay) accuracyDisplay.textContent = `${accuracy}%`;
+        if (timeDisplay) timeDisplay.textContent = `${Math.round(elapsed)}s`;
 
-        this.typingTest.wpm = wpm;
+        this.typingTest.wpm = wpm || 0;
         this.typingTest.accuracy = accuracy;
     }
 
     async completeTypingTest() {
         this.typingTest.isActive = false;
         
+        // Clear the stats update interval
+        if (this.typingStatsInterval) {
+            clearInterval(this.typingStatsInterval);
+            this.typingStatsInterval = null;
+        }
+        
         const inputElement = document.getElementById('typing-input');
         const startBtn = document.getElementById('start-typing-test');
 
-        inputElement.disabled = true;
-        startBtn.textContent = 'Start New Test';
-        startBtn.disabled = false;
+        if (inputElement) inputElement.disabled = true;
+        if (startBtn) {
+            startBtn.textContent = 'Start New Test';
+            startBtn.disabled = false;
+        }
+
+        // Calculate final stats
+        const elapsed = (Date.now() - this.typingTest.startTime) / 1000;
+        const wordsTyped = this.typingTest.currentIndex / 5;
+        const finalWpm = Math.round((wordsTyped / elapsed) * 60);
+        let finalAccuracy = 0;
+        
+        if (this.typingTest.currentIndex > 0) {
+            finalAccuracy = Math.round(((this.typingTest.currentIndex - this.typingTest.errors) / this.typingTest.currentIndex) * 100);
+            finalAccuracy = Math.max(0, finalAccuracy);
+        }
+
+        this.typingTest.wpm = finalWpm || 0;
+        this.typingTest.accuracy = finalAccuracy;
 
         // Save typing stats if student is registered
         if (this.currentStudent) {
@@ -1356,7 +1415,9 @@ class AILearningPlatform {
                         wpm: this.typingTest.wpm,
                         accuracy: this.typingTest.accuracy,
                         text: this.typingTest.text,
-                        timeSpent: (Date.now() - this.typingTest.startTime) / 1000
+                        timeSpent: elapsed,
+                        charactersTyped: this.typingTest.currentIndex,
+                        errors: this.typingTest.errors
                     })
                 });
             } catch (error) {

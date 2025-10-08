@@ -18,6 +18,77 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Authentication Check -->
+    <script>
+        // Check if user is authenticated
+        function checkAuthentication() {
+            const currentStudent = localStorage.getItem('currentStudent') || sessionStorage.getItem('currentStudent');
+            
+            if (!currentStudent) {
+                // User is not authenticated, redirect to login page
+                window.location.href = 'auth.html';
+                return false;
+            }
+            
+            try {
+                const student = JSON.parse(currentStudent);
+                console.log('✅ User authenticated:', student.name);
+                return true;
+            } catch (error) {
+                console.error('❌ Error parsing student data:', error);
+                // Clear invalid data and redirect to login
+                localStorage.removeItem('currentStudent');
+                sessionStorage.removeItem('currentStudent');
+                window.location.href = 'auth.html';
+                return false;
+            }
+        }
+        
+        // Check authentication on page load
+        if (!checkAuthentication()) {
+            // Stop execution if not authenticated
+            document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial, sans-serif;"><div style="text-align: center;"><h2>Redirecting to login...</h2><p>Please wait while we redirect you to the login page.</p></div></div>';
+        } else {
+            // User is authenticated, update UI
+            updateAuthenticatedUI();
+        }
+        
+        function updateAuthenticatedUI() {
+            const currentStudent = localStorage.getItem('currentStudent') || sessionStorage.getItem('currentStudent');
+            const student = JSON.parse(currentStudent);
+            
+            // Show user info and logout button
+            const userInfo = document.getElementById('user-info');
+            const userName = document.getElementById('user-name');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            if (userInfo && userName && logoutBtn) {
+                userInfo.style.display = 'block';
+                userName.textContent = `Welcome, ${student.name}`;
+                logoutBtn.style.display = 'inline-flex';
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            // Clear stored data
+            localStorage.removeItem('currentStudent');
+            localStorage.removeItem('currentSession');
+            sessionStorage.removeItem('currentStudent');
+            sessionStorage.removeItem('currentSession');
+            
+            // Redirect to login page
+            window.location.href = 'auth.html';
+        }
+        
+        // Add logout event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+        });
+    </script>
     <div class="app-container">
         <!-- Header -->
         <header class="header">
@@ -58,18 +129,16 @@
                         </a>
                     </nav>
                     <div class="header-actions">
-                <button class="btn btn-primary" id="login-btn">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Login
-                </button>
-                <button class="btn btn-outline" id="register-btn">
-                    <i class="fas fa-user-plus"></i>
-                    Register
-                </button>
-                <button class="btn btn-danger" id="logout-btn" style="display: none;">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Logout
-                </button>
+                        <div class="user-info" id="user-info" style="display: none;">
+                            <span id="user-name">Welcome, User</span>
+                            <a href="profile.html" class="btn btn-outline" style="margin-left: 10px; padding: 8px 12px; font-size: 0.9rem;">
+                                <i class="fas fa-user"></i> Profile
+                            </a>
+                        </div>
+                        <button class="btn btn-danger" id="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
                         <button class="btn btn-outline" id="theme-toggle">
                             <i class="fas fa-moon"></i>
                         </button>

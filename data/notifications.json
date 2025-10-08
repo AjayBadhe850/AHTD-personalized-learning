@@ -491,5 +491,83 @@
     "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:04:56 pm\n🕐 Logout Time: 8/10/2025, 2:04:56 pm",
     "timestamp": "2025-10-08T08:34:56.559Z",
     "status": "sent"
+  },
+  {
+    "id": "1759916094138",
+    "type": "sms",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:04:54 pm.",
+    "timestamp": "2025-10-08T09:34:54.138Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759916094139",
+    "type": "email",
+    "recipient": "sarah.johnson@demo.com",
+    "subject": "Student Login Notification",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:04:54 pm.",
+    "timestamp": "2025-10-08T09:34:54.139Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759916094141",
+    "type": "whatsapp",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:04:54 pm.",
+    "timestamp": "2025-10-08T09:34:54.141Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759917792885",
+    "type": "sms",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:33:12 pm.",
+    "timestamp": "2025-10-08T10:03:12.885Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759917792886",
+    "type": "email",
+    "recipient": "sarah.johnson@demo.com",
+    "subject": "Student Login Notification",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:33:12 pm.",
+    "timestamp": "2025-10-08T10:03:12.886Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759917792887",
+    "type": "whatsapp",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:33:12 pm.",
+    "timestamp": "2025-10-08T10:03:12.887Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759918598894",
+    "type": "sms",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:46:38 pm.",
+    "timestamp": "2025-10-08T10:16:38.894Z",
+    "status": "simulated",
+    "isReal": false
+  },
+  {
+    "id": "1759918598896",
+    "type": "email",
+    "recipient": "sarah.johnson@demo.com",
+    "subject": "Student Login Notification",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:46:38 pm.",
+    "timestamp": "2025-10-08T10:16:38.896Z",
+    "status": "simulated",
+    "isReal": false
+  },
+  {
+    "id": "1759918598899",
+    "type": "whatsapp",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 3:46:38 pm.",
+    "timestamp": "2025-10-08T10:16:38.899Z",
+    "status": "simulated",
+    "isReal": false
   }
 ]

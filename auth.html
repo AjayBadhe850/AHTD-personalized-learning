@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Learning Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .auth-header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            background: transparent;
+            color: #666;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #4f46e5;
+            border-bottom: 2px solid #4f46e5;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .auth-body {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4f46e5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .demo-credentials {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .demo-credentials h4 {
+            color: #0066cc;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .demo-credentials p {
+            color: #333;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .demo-credentials .credentials {
+            background: white;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #fcc;
+            display: none;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #363;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #cfc;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+            font-size: 1.5rem;
+            color: #4f46e5;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .auth-footer {
+            text-align: center;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .auth-footer p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .auth-footer a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .forgot-password a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password a:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4f46e5;
+        }
+
+        .remember-me label {
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                margin: 10px;
+                max-width: none;
+            }
+            
+            .auth-header {
+                padding: 30px 20px;
+            }
+            
+            .auth-body {
+                padding: 30px 20px;
+            }
+            
+            .auth-footer {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1><i class="fas fa-graduation-cap"></i> AI Learning Platform</h1>
+            <p id="auth-subtitle">Welcome back! Please sign in to continue</p>
+        </div>
+
+        <div class="auth-tabs">
+            <button class="tab-button active" id="login-tab" onclick="switchTab('login')">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <button class="tab-button" id="register-tab" onclick="switchTab('register')">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+        </div>
+
+        <div class="auth-body">
+            <div class="error-message" id="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="error-text"></span>
+            </div>
+
+            <div class="success-message" id="success-message">
+                <i class="fas fa-check-circle"></i>
+                <span id="success-text"></span>
+            </div>
+
+            <div class="demo-credentials">
+                <h4><i class="fas fa-info-circle"></i> Demo Credentials</h4>
+                <p>Use these credentials to test the platform:</p>
+                <div class="credentials">
+                    <strong>Username:</strong> alex_demo<br>
+                    <strong>Password:</strong> demo123
+                </div>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" name="username" class="form-control" 
+                               placeholder="Enter your username" required autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" class="form-control" 
+                               placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember-me" name="remember-me">
+                    <label for="remember-me">Remember me</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Signing you in...</p>
+            </div>
+
+            <div class="forgot-password">
+                <a href="#" onclick="showForgotPassword()">Forgot your password?</a>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="register-form" style="display: none;">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="reg-name" name="name" class="form-control" 
+                               placeholder="Enter your full name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-email">Email Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="reg-email" name="email" class="form-control" 
+                               placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <div class="input-group">
+                        <i class="fas fa-at"></i>
+                        <input type="text" id="reg-username" name="username" class="form-control" 
+                               placeholder="Choose a username" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="reg-password" name="password" class="form-control" 
+                               placeholder="Create a password" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-confirm-password">Confirm Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="reg-confirm-password" name="confirmPassword" class="form-control" 
+                               placeholder="Confirm your password" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-grade">Grade Level</label>
+                    <div class="input-group">
+                        <i class="fas fa-graduation-cap"></i>
+                        <select id="reg-grade" name="grade" class="form-control" required>
+                            <option value="">Select your grade</option>
+                            <option value="6th Grade">6th Grade</option>
+                            <option value="7th Grade">7th Grade</option>
+                            <option value="8th Grade">8th Grade</option>
+                            <option value="9th Grade">9th Grade</option>
+                            <option value="10th Grade">10th Grade</option>
+                            <option value="11th Grade">11th Grade</option>
+                            <option value="12th Grade">12th Grade</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-interests">Learning Interests</label>
+                    <div class="input-group">
+                        <i class="fas fa-heart"></i>
+                        <input type="text" id="reg-interests" name="interests" class="form-control" 
+                               placeholder="e.g., Mathematics, Science, Programming" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-learning-goals">Learning Goals</label>
+                    <div class="input-group">
+                        <i class="fas fa-target"></i>
+                        <textarea id="reg-learning-goals" name="learningGoals" class="form-control" 
+                                  placeholder="Describe your learning goals..." rows="3" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-parent-name">Parent/Guardian Name</label>
+                    <div class="input-group">
+                        <i class="fas fa-user-friends"></i>
+                        <input type="text" id="reg-parent-name" name="parentName" class="form-control" 
+                               placeholder="Parent or guardian full name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-parent-email">Parent/Guardian Email</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="reg-parent-email" name="parentEmail" class="form-control" 
+                               placeholder="Parent or guardian email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-parent-phone">Parent/Guardian Phone</label>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="reg-parent-phone" name="parentPhone" class="form-control" 
+                               placeholder="Parent or guardian phone number" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg-address">Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <textarea id="reg-address" name="address" class="form-control" 
+                                  placeholder="Your home address" rows="2" required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="register-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <p><small>&copy; 2024 AI Learning Platform. All rights reserved.</small></p>
+        </div>
+    </div>
+
+    <script>
+        class AuthManager {
+            constructor() {
+                this.apiBaseUrl = 'http://localhost:3000';
+                this.initializeEventListeners();
+                this.checkExistingSession();
+            }
+
+            initializeEventListeners() {
+                const loginForm = document.getElementById('login-form');
+                const usernameInput = document.getElementById('username');
+                const passwordInput = document.getElementById('password');
+
+                loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Auto-fill demo credentials on click
+                usernameInput.addEventListener('focus', () => {
+                    if (usernameInput.value === '') {
+                        usernameInput.value = 'alex_demo';
+                        passwordInput.value = 'demo123';
+                    }
+                });
+
+                // Enter key handling
+                passwordInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.handleLogin(e);
+                    }
+                });
+            }
+
+            checkExistingSession() {
+                const currentStudent = localStorage.getItem('currentStudent');
+                if (currentStudent) {
+                    try {
+                        const student = JSON.parse(currentStudent);
+                        this.showSuccess(`Welcome back, ${student.name}! Redirecting...`);
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } catch (error) {
+                        console.error('Error parsing stored student data:', error);
+                        localStorage.removeItem('currentStudent');
+                    }
+                }
+            }
+
+            async handleLogin(event) {
+                event.preventDefault();
+                
+                const form = document.getElementById('login-form');
+                const formData = new FormData(form);
+                
+                const loginData = {
+                    username: formData.get('username'),
+                    password: formData.get('password'),
+                    rememberMe: formData.get('remember-me') === 'on'
+                };
+
+                this.showLoading(true);
+                this.hideMessages();
+
+                try {
+                    console.log('🔍 Attempting login with:', loginData);
+                    console.log('🔍 API Base URL:', this.apiBaseUrl);
+                    
+                    const response = await fetch(`${this.apiBaseUrl}/api/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(loginData)
+                    });
+
+                    console.log('🔍 Response status:', response.status);
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error('🔍 Error response:', errorData);
+                        throw new Error(errorData.error || 'Login failed');
+                    }
+
+                    const result = await response.json();
+                    console.log('🔍 Login successful:', result);
+                    
+                    // Store student data
+                    if (loginData.rememberMe) {
+                        localStorage.setItem('currentStudent', JSON.stringify(result.student));
+                        localStorage.setItem('currentSession', result.sessionId);
+                    } else {
+                        sessionStorage.setItem('currentStudent', JSON.stringify(result.student));
+                        sessionStorage.setItem('currentSession', result.sessionId);
+                    }
+                    
+                    this.showSuccess(`Welcome back, ${result.student.name}! Redirecting to dashboard...`);
+                    
+                    // Redirect to main application
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Login error:', error);
+                    console.error('Error details:', {
+                        name: error.name,
+                        message: error.message,
+                        stack: error.stack
+                    });
+                    this.showError(`Login failed: ${error.message}`);
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            showLoading(show, type = 'login') {
+                const loading = document.getElementById('loading');
+                const loginBtn = document.getElementById('login-btn');
+                const registerBtn = document.getElementById('register-btn');
+                
+                if (show) {
+                    loading.style.display = 'block';
+                    if (type === 'login') {
+                        loginBtn.disabled = true;
+                        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    } else {
+                        registerBtn.disabled = true;
+                        registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+                    }
+                } else {
+                    loading.style.display = 'none';
+                    if (type === 'login') {
+                        loginBtn.disabled = false;
+                        loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+                    } else {
+                        registerBtn.disabled = false;
+                        registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+                    }
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('error-message');
+                const errorText = document.getElementById('error-text');
+                
+                errorText.textContent = message;
+                errorDiv.style.display = 'block';
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    this.hideMessages();
+                }, 5000);
+            }
+
+            showSuccess(message) {
+                const successDiv = document.getElementById('success-message');
+                const successText = document.getElementById('success-text');
+                
+                successText.textContent = message;
+                successDiv.style.display = 'block';
+            }
+
+            hideMessages() {
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('success-message').style.display = 'none';
+            }
+        }
+
+        // Tab switching functionality
+        function switchTab(tab) {
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const subtitle = document.getElementById('auth-subtitle');
+
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                subtitle.textContent = 'Welcome back! Please sign in to continue';
+            } else {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                subtitle.textContent = 'Create your account to get started';
+            }
+        }
+
+        // Registration functionality
+        async function handleRegistration(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('register-form');
+            const formData = new FormData(form);
+            
+            const registrationData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                username: formData.get('username'),
+                password: formData.get('password'),
+                confirmPassword: formData.get('confirmPassword'),
+                grade: formData.get('grade'),
+                interests: formData.get('interests').split(',').map(i => i.trim()),
+                learningGoals: formData.get('learningGoals'),
+                contactInfo: {
+                    parentName: formData.get('parentName'),
+                    parentEmail: formData.get('parentEmail'),
+                    parentPhone: formData.get('parentPhone'),
+                    address: formData.get('address')
+                }
+            };
+
+            // Validate passwords match
+            if (registrationData.password !== registrationData.confirmPassword) {
+                authManager.showError('Passwords do not match');
+                return;
+            }
+
+            authManager.showLoading(true, 'register');
+            authManager.hideMessages();
+
+            try {
+                console.log('🔍 Attempting registration with:', registrationData);
+                console.log('🔍 API Base URL:', authManager.apiBaseUrl);
+                
+                const response = await fetch(`${authManager.apiBaseUrl}/api/students/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(registrationData)
+                });
+
+                console.log('🔍 Registration response status:', response.status);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('🔍 Registration error response:', errorData);
+                    throw new Error(errorData.error || 'Registration failed');
+                }
+
+                const result = await response.json();
+                console.log('🔍 Registration successful:', result);
+                
+                authManager.showSuccess(`Account created successfully! Welcome, ${result.student.name}! Redirecting to dashboard...`);
+                
+                // Auto-login after registration
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                console.error('Registration error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                });
+                authManager.showError(`Registration failed: ${error.message}`);
+            } finally {
+                authManager.showLoading(false, 'register');
+            }
+        }
+
+        // Global functions for footer links
+        function showForgotPassword() {
+            alert('Password reset functionality will be implemented soon. For now, please use the demo credentials: alex_demo / demo123');
+        }
+
+        function showRegistration() {
+            switchTab('register');
+        }
+
+        // Initialize the authentication manager when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            authManager = new AuthManager();
+            
+            // Add registration form event listener
+            const registerForm = document.getElementById('register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', handleRegistration);
+            }
+        });
+    </script>
+</body>
+</html>
