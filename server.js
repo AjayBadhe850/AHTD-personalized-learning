@@ -417,7 +417,7 @@ app.post('/api/students/activity', (req, res) => {
 });
 
 // Login/Logout Tracking Routes
-app.post('/api/students/login', (req, res) => {
+app.post('/api/students/login', async (req, res) => {
     const { 
         studentId, 
         deviceInfo, 
@@ -475,7 +475,7 @@ app.post('/api/students/login', (req, res) => {
     writeData('loginLogs', loginLogs);
 
     // Send login notification to parents
-    sendParentNotification(student, 'login', {
+    await sendParentNotification(student, 'login', {
         loginTime: loginTime,
         studentName: student.name,
         deviceInfo: deviceInfo,
@@ -496,7 +496,7 @@ app.post('/api/students/login', (req, res) => {
     });
 });
 
-app.post('/api/students/logout', (req, res) => {
+app.post('/api/students/logout', async (req, res) => {
     const { studentId, reason } = req.body;
     
     if (!studentId) {
@@ -537,7 +537,7 @@ app.post('/api/students/logout', (req, res) => {
         writeData('loginLogs', loginLogs);
 
         // Send logout notification with session summary
-        sendParentNotification(student, 'logout', {
+        await sendParentNotification(student, 'logout', {
             loginTime: lastLogin.loginTime,
             logoutTime: logoutTime,
             sessionDuration: lastLogin.sessionDuration,
@@ -1025,7 +1025,7 @@ const calculateLearningStreak = (sessions) => {
 };
 
 // Parent Notification System
-const sendParentNotification = (student, type, data) => {
+const sendParentNotification = async (student, type, data) => {
     console.log(`🔔 Attempting to send ${type} notification for student: ${student.name}`);
     
     if (!student.contactInfo) {
@@ -1094,90 +1094,132 @@ const sendParentNotification = (student, type, data) => {
             break;
     }
 
-    // Send SMS notification (simulated)
+    // Send notifications in parallel for better performance
+    const notificationPromises = [];
+
+    // Send SMS notification (real)
     if (student.contactInfo.parentPhone) {
-        sendSMS(student.contactInfo.parentPhone, message);
+        notificationPromises.push(
+            sendSMS(student.contactInfo.parentPhone, message)
+                .then(result => console.log(`📱 SMS result for ${student.name}:`, result))
+                .catch(error => console.error(`❌ SMS failed for ${student.name}:`, error))
+        );
     }
 
-    // Send Email notification (simulated)
+    // Send Email notification (real)
     if (student.contactInfo.parentEmail) {
-        sendEmail(student.contactInfo.parentEmail, subject, message);
+        notificationPromises.push(
+            sendEmail(student.contactInfo.parentEmail, subject, message)
+                .then(result => console.log(`📧 Email result for ${student.name}:`, result))
+                .catch(error => console.error(`❌ Email failed for ${student.name}:`, error))
+        );
     }
 
-    // Send WhatsApp notification (simulated)
+    // Send WhatsApp notification (real)
     if (student.contactInfo.parentPhone) {
-        sendWhatsApp(student.contactInfo.parentPhone, message);
+        notificationPromises.push(
+            sendWhatsApp(student.contactInfo.parentPhone, message)
+                .then(result => console.log(`📱 WhatsApp result for ${student.name}:`, result))
+                .catch(error => console.error(`❌ WhatsApp failed for ${student.name}:`, error))
+        );
     }
 
-    console.log(`Notification sent to parents of ${student.name}: ${type}`);
+    // Wait for all notifications to complete
+    try {
+        await Promise.all(notificationPromises);
+        console.log(`✅ All notifications sent for ${student.name}: ${type}`);
+    } catch (error) {
+        console.error(`❌ Some notifications failed for ${student.name}:`, error);
+    }
 };
 
-// Simulated SMS sending function
-const sendSMS = (phoneNumber, message) => {
-    // In a real implementation, you would integrate with SMS service like Twilio
-    console.log(`📱 SMS to ${phoneNumber}: ${message}`);
-    
-    // Store notification in logs
-    const notifications = readData('notifications') || [];
-    const notification = {
-        id: Date.now().toString(),
-        type: 'sms',
-        recipient: phoneNumber,
-        message: message,
-        timestamp: new Date().toISOString(),
-        status: 'sent'
-    };
-    notifications.push(notification);
-    writeData('notifications', notifications);
-    
-    console.log(`✅ SMS notification logged with ID: ${notification.id}`);
+// Real SMS sending function
+const sendSMS = async (phoneNumber, message) => {
+    try {
+        const { sendRealSMS } = require('./notification-config');
+        const result = await sendRealSMS(phoneNumber, message);
+        console.log(`✅ SMS notification sent with result:`, result);
+        return result;
+    } catch (error) {
+        console.error('❌ Error sending SMS:', error);
+        // Fallback to simulation
+        console.log(`📱 [FALLBACK] SMS to ${phoneNumber}: ${message}`);
+        
+        const notifications = readData('notifications') || [];
+        const notification = {
+            id: Date.now().toString(),
+            type: 'sms',
+            recipient: phoneNumber,
+            message: message,
+            timestamp: new Date().toISOString(),
+            status: 'failed_fallback'
+        };
+        notifications.push(notification);
+        writeData('notifications', notifications);
+        
+        console.log(`✅ SMS notification logged with ID: ${notification.id}`);
+    }
 };
 
-// Simulated Email sending function
-const sendEmail = (email, subject, message) => {
-    // In a real implementation, you would integrate with email service like SendGrid
-    console.log(`📧 Email to ${email}: ${subject}\n${message}`);
-    
-    // Store notification in logs
-    const notifications = readData('notifications') || [];
-    const notification = {
-        id: Date.now().toString(),
-        type: 'email',
-        recipient: email,
-        subject: subject,
-        message: message,
-        timestamp: new Date().toISOString(),
-        status: 'sent'
-    };
-    notifications.push(notification);
-    writeData('notifications', notifications);
-    
-    console.log(`✅ Email notification logged with ID: ${notification.id}`);
+// Real Email sending function
+const sendEmail = async (email, subject, message) => {
+    try {
+        const { sendRealEmail } = require('./notification-config');
+        const result = await sendRealEmail(email, subject, message);
+        console.log(`✅ Email notification sent with result:`, result);
+        return result;
+    } catch (error) {
+        console.error('❌ Error sending email:', error);
+        // Fallback to simulation
+        console.log(`📧 [FALLBACK] Email to ${email}: ${subject}\n${message}`);
+        
+        const notifications = readData('notifications') || [];
+        const notification = {
+            id: Date.now().toString(),
+            type: 'email',
+            recipient: email,
+            subject: subject,
+            message: message,
+            timestamp: new Date().toISOString(),
+            status: 'failed_fallback'
+        };
+        notifications.push(notification);
+        writeData('notifications', notifications);
+        
+        console.log(`✅ Email notification logged with ID: ${notification.id}`);
+    }
 };
 
-// Simulated WhatsApp sending function
-const sendWhatsApp = (phoneNumber, message) => {
-    // In a real implementation, you would integrate with WhatsApp Business API
-    console.log(`📱 WhatsApp to ${phoneNumber}: ${message}`);
-    
-    // Store notification in logs
-    const notifications = readData('notifications') || [];
-    const notification = {
-        id: Date.now().toString(),
-        type: 'whatsapp',
-        recipient: phoneNumber,
-        message: message,
-        timestamp: new Date().toISOString(),
-        status: 'sent'
-    };
-    notifications.push(notification);
-    writeData('notifications', notifications);
-    
-    console.log(`✅ WhatsApp notification logged with ID: ${notification.id}`);
+// Real WhatsApp sending function
+const sendWhatsApp = async (phoneNumber, message) => {
+    try {
+        const { sendRealWhatsApp } = require('./notification-config');
+        const result = await sendRealWhatsApp(phoneNumber, message);
+        console.log(`✅ WhatsApp notification sent with result:`, result);
+        return result;
+    } catch (error) {
+        console.error('❌ Error sending WhatsApp:', error);
+        // Fallback to simulation
+        console.log(`📱 [FALLBACK] WhatsApp to ${phoneNumber}: ${message}`);
+        
+        const notifications = readData('notifications') || [];
+        const notification = {
+            id: Date.now().toString(),
+            type: 'whatsapp',
+            recipient: phoneNumber,
+            message: message,
+            timestamp: new Date().toISOString(),
+            status: 'failed_fallback'
+        };
+        notifications.push(notification);
+        writeData('notifications', notifications);
+        
+        console.log(`✅ WhatsApp notification logged with ID: ${notification.id}`);
+    }
 };
 
 // Progress Tracking and Notifications
-app.post('/api/students/progress', (req, res) => {
+app.post('/api/students/progress', async (req, res) => {
     const { studentId, lessonId, score, subject, improvement } = req.body;
     
     if (!studentId || !lessonId) {
@@ -1221,7 +1263,7 @@ app.post('/api/students/progress', (req, res) => {
 
     // Send progress notification if significant improvement
     if (improvement && improvement > 5) {
-        sendParentNotification(student, 'progress', {
+        await sendParentNotification(student, 'progress', {
             studentName: student.name,
             scoreIncrease: improvement,
             subject: subject,
@@ -1237,7 +1279,7 @@ app.post('/api/students/progress', (req, res) => {
 });
 
 // Weekly Report Generation
-app.post('/api/students/weekly-report', (req, res) => {
+app.post('/api/students/weekly-report', async (req, res) => {
     const { studentId } = req.body;
     
     if (!studentId) {
@@ -1296,7 +1338,7 @@ app.post('/api/students/weekly-report', (req, res) => {
     const improvement = currentWeekAvg - previousWeekAvg;
 
     // Send weekly report to parents
-    sendParentNotification(student, 'weekly_report', {
+    await sendParentNotification(student, 'weekly_report', {
         studentName: student.name,
         lessonsCompleted: lessonsCompleted,
         totalTime: formatDuration(totalTime),
@@ -1392,7 +1434,7 @@ app.get('/api/notifications', (req, res) => {
 });
 
 // Login with username/password
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
     
     if (!username || !password) {
@@ -1446,7 +1488,7 @@ app.post('/api/login', (req, res) => {
     writeData('loginLogs', loginLogs);
     
     // Send login notification to parents
-    sendParentNotification(student, 'login', {
+    await sendParentNotification(student, 'login', {
         loginTime: loginTime,
         studentName: student.name,
         deviceInfo: loginRecord.deviceInfo
@@ -1560,7 +1602,7 @@ Happy Learning! 🚀`;
 });
 
 // Test endpoint for parent notifications
-app.post('/api/test/notification', (req, res) => {
+app.post('/api/test/notification', async (req, res) => {
     const students = readData('students');
     const testStudent = students.find(s => s.id === 'test-student-1');
     
@@ -1569,7 +1611,7 @@ app.post('/api/test/notification', (req, res) => {
     }
     
     // Test logout notification
-    sendParentNotification(testStudent, 'logout', {
+    await sendParentNotification(testStudent, 'logout', {
         loginTime: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
         logoutTime: new Date().toISOString(),
         sessionDuration: 3600000, // 1 hour

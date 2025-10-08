@@ -191,5 +191,105 @@
     "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 1:46:33 pm.",
     "timestamp": "2025-10-08T08:16:33.109Z",
     "status": "sent"
+  },
+  {
+    "id": "1759911801206",
+    "type": "sms",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 1:53:21 pm.",
+    "timestamp": "2025-10-08T08:23:21.206Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759911801210",
+    "type": "email",
+    "recipient": "sarah.johnson@demo.com",
+    "subject": "Student Login Notification",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 1:53:21 pm.",
+    "timestamp": "2025-10-08T08:23:21.210Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759911801213",
+    "type": "whatsapp",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 1:53:21 pm.",
+    "timestamp": "2025-10-08T08:23:21.213Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759911897999",
+    "type": "sms",
+    "recipient": "+17396230359",
+    "message": "📊 Alex Johnson has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 0h 1m\n📖 Lessons Accessed: 0\n🕐 Login Time: 8/10/2025, 1:53:21 pm\n🕐 Logout Time: 8/10/2025, 1:54:57 pm",
+    "timestamp": "2025-10-08T08:24:57.999Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759911898001",
+    "type": "email",
+    "recipient": "sarah.johnson@demo.com",
+    "subject": "Student Session Summary",
+    "message": "📊 Alex Johnson has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 0h 1m\n📖 Lessons Accessed: 0\n🕐 Login Time: 8/10/2025, 1:53:21 pm\n🕐 Logout Time: 8/10/2025, 1:54:57 pm",
+    "timestamp": "2025-10-08T08:24:58.001Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759911898003",
+    "type": "whatsapp",
+    "recipient": "+17396230359",
+    "message": "📊 Alex Johnson has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 0h 1m\n📖 Lessons Accessed: 0\n🕐 Login Time: 8/10/2025, 1:53:21 pm\n🕐 Logout Time: 8/10/2025, 1:54:57 pm",
+    "timestamp": "2025-10-08T08:24:58.003Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759912324239",
+    "type": "sms",
+    "recipient": "+1234567890",
+    "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:02:04 pm\n🕐 Logout Time: 8/10/2025, 2:02:04 pm",
+    "timestamp": "2025-10-08T08:32:04.239Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759912324241",
+    "type": "email",
+    "recipient": "jane.doe@example.com",
+    "subject": "Student Session Summary",
+    "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:02:04 pm\n🕐 Logout Time: 8/10/2025, 2:02:04 pm",
+    "timestamp": "2025-10-08T08:32:04.241Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759912324241",
+    "type": "whatsapp",
+    "recipient": "+1234567890",
+    "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:02:04 pm\n🕐 Logout Time: 8/10/2025, 2:02:04 pm",
+    "timestamp": "2025-10-08T08:32:04.241Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759912347118",
+    "type": "sms",
+    "recipient": "+1234567890",
+    "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:02:27 pm\n🕐 Logout Time: 8/10/2025, 2:02:27 pm",
+    "timestamp": "2025-10-08T08:32:27.118Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759912347121",
+    "type": "email",
+    "recipient": "jane.doe@example.com",
+    "subject": "Student Session Summary",
+    "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:02:27 pm\n🕐 Logout Time: 8/10/2025, 2:02:27 pm",
+    "timestamp": "2025-10-08T08:32:27.121Z",
+    "status": "sent"
+  },
+  {
+    "id": "1759912347123",
+    "type": "whatsapp",
+    "recipient": "+1234567890",
+    "message": "📊 John Doe has logged out of the AI Learning Platform.\n\n⏰ Session Duration: 1h 0m\n📖 Lessons Accessed: 2\n🕐 Login Time: 8/10/2025, 1:02:27 pm\n🕐 Logout Time: 8/10/2025, 2:02:27 pm",
+    "timestamp": "2025-10-08T08:32:27.123Z",
+    "status": "sent"
   }
 ]

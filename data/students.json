@@ -92,9 +92,24 @@
         "pagesVisited": [
           "/login"
         ]
+      },
+      {
+        "id": "1759911801198",
+        "loginTime": "2025-10-08T08:23:21.198Z",
+        "logoutTime": "2025-10-08T08:24:57.996Z",
+        "sessionDuration": 96798,
+        "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+        "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+        "status": "completed",
+        "activities": [],
+        "lessonsAccessed": [],
+        "pagesVisited": [
+          "/login"
+        ],
+        "logoutReason": "User logout"
       }
     ],
-    "lastActive": "2025-10-08T08:16:33.097Z",
+    "lastActive": "2025-10-08T08:24:57.996Z",
     "totalLessonsCompleted": 0,
     "averageScore": 0,
     "createdAt": "2024-01-01T00:00:00.000Z",
