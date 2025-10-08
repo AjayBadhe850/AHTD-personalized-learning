@@ -3,7 +3,8 @@ Configuration settings for the AI Learning Platform
 """
 
 from typing import List, Optional
-from pydantic import BaseSettings, validator
+from pydantic_settings import BaseSettings
+from pydantic import validator
 import os
 
 
@@ -21,10 +22,10 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ALGORITHM: str = "HS256"
     
-    # Database
-    DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/ai_learning_platform"
+    # Database (using SQLite for demo)
+    DATABASE_URL: str = "sqlite:///./ai_learning_platform.db"
     
-    # Redis
+    # Redis (optional for demo)
     REDIS_URL: str = "redis://localhost:6379"
     
     # CORS
