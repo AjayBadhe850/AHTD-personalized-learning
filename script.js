@@ -51,6 +51,7 @@ class AILearningPlatform {
         await this.loadInitialData();
         
         this.updateDashboard();
+        this.updateTypingLevelIndicator();
         this.showSection('dashboard');
         this.startSessionTracking();
         
@@ -696,21 +697,21 @@ class AILearningPlatform {
                         averageTypingSpeed: 0
                     };
 
-                    this.currentStudent = student;
-                    this.saveCurrentStudent();
-                    this.closeLoginModal();
+                this.currentStudent = student;
+                this.saveCurrentStudent();
+                this.closeLoginModal();
                     this.showToast(`Welcome back, ${student.name}!`, 'success');
-                    
-                    // Show welcome animation
-                    setTimeout(() => {
-                        this.showWelcomeModal(student);
-                    }, 500);
-                    
-                    // Update dashboard profile
-                    this.updateDashboardProfile(student);
-                    
-                    // Update UI
-                    this.updateLoginUI(true);
+                
+                // Show welcome animation
+                setTimeout(() => {
+                    this.showWelcomeModal(student);
+                }, 500);
+                
+                // Update dashboard profile
+                this.updateDashboardProfile(student);
+                
+                // Update UI
+                this.updateLoginUI(true);
                 } else {
                     throw new Error('Invalid demo credentials. Use username: alex_demo, password: demo123');
                 }
@@ -1269,16 +1270,20 @@ class AILearningPlatform {
             return;
         }
 
-        // Check if text is available
-        if (!textElement.textContent || textElement.textContent.trim() === '') {
+        // Generate new text based on user level
+        const newText = this.generateTypingText();
+        if (!newText) {
             console.error('No typing text available');
             this.showToast('No typing text available', 'error');
             return;
         }
 
+        // Update the text element with new content
+        textElement.textContent = newText;
+
         this.typingTest.isActive = true;
         this.typingTest.startTime = Date.now();
-        this.typingTest.text = textElement.textContent.trim();
+        this.typingTest.text = newText;
         this.typingTest.currentIndex = 0;
         this.typingTest.errors = 0;
         this.typingTest.wpm = 0;
@@ -1383,8 +1388,8 @@ class AILearningPlatform {
 
         if (inputElement) inputElement.disabled = true;
         if (startBtn) {
-            startBtn.textContent = 'Start New Test';
-            startBtn.disabled = false;
+        startBtn.textContent = 'Start New Test';
+        startBtn.disabled = false;
         }
 
         // Calculate final stats
@@ -1426,6 +1431,124 @@ class AILearningPlatform {
         }
 
         this.showToast(`Typing test completed! WPM: ${this.typingTest.wpm}, Accuracy: ${this.typingTest.accuracy}%`, 'success');
+        
+        // Update user level based on performance
+        this.updateUserTypingLevel();
+        
+        // Show repeat option
+        this.showRepeatOption();
+    }
+
+    generateTypingText() {
+        const userLevel = this.getUserTypingLevel();
+        const texts = this.getTypingTextsByLevel(userLevel);
+        const randomIndex = Math.floor(Math.random() * texts.length);
+        return texts[randomIndex];
+    }
+
+    getUserTypingLevel() {
+        // Get user's average typing speed from localStorage or default to beginner
+        const userStats = localStorage.getItem('userTypingStats');
+        if (userStats) {
+            const stats = JSON.parse(userStats);
+            const avgWpm = stats.averageWpm || 0;
+            
+            if (avgWpm >= 60) return 'advanced';
+            if (avgWpm >= 40) return 'intermediate';
+            return 'beginner';
+        }
+        return 'beginner';
+    }
+
+    getTypingTextsByLevel(level) {
+        const texts = {
+            beginner: [
+                "The quick brown fox jumps over the lazy dog. This is a simple sentence for beginners to practice typing.",
+                "Hello world! Welcome to typing practice. Start slow and focus on accuracy. Speed will come with time.",
+                "Learning to type is fun and useful. Practice makes perfect. Keep your fingers on the home row keys.",
+                "The cat sat on the mat. The dog ran in the park. These are easy words for typing practice.",
+                "Type each letter carefully. Look at the screen, not your hands. This helps you learn faster."
+            ],
+            intermediate: [
+                "The quick brown fox jumps over the lazy dog. This classic pangram contains every letter of the alphabet at least once, making it perfect for typing practice and keyboard testing.",
+                "Technology has revolutionized the way we communicate, work, and learn. From smartphones to artificial intelligence, digital innovations continue to shape our daily lives and future possibilities.",
+                "Education is the foundation of personal growth and societal progress. Through continuous learning, individuals can develop new skills, expand their knowledge, and contribute meaningfully to their communities.",
+                "The art of programming combines logical thinking with creative problem-solving. Developers use various programming languages to build applications, websites, and software that solve real-world challenges.",
+                "Climate change represents one of the most pressing challenges of our time. Sustainable practices, renewable energy, and environmental conservation are essential for protecting our planet for future generations."
+            ],
+            advanced: [
+                "The quick brown fox jumps over the lazy dog. This pangram, while seemingly simple, demonstrates the complexity of English orthography and serves as an excellent tool for testing keyboard layouts, font rendering, and typing proficiency across different systems and applications.",
+                "Quantum computing represents a paradigm shift in computational capabilities, leveraging quantum mechanical phenomena such as superposition and entanglement to process information in ways that classical computers cannot. This revolutionary technology promises to solve complex problems in cryptography, optimization, and scientific simulation.",
+                "The intersection of artificial intelligence and human creativity has given rise to unprecedented possibilities in art, music, literature, and design. Machine learning algorithms can now generate original content, assist in creative processes, and even collaborate with human artists to produce innovative works that challenge traditional boundaries of authorship and artistic expression.",
+                "Neuroscience research has revealed the remarkable plasticity of the human brain, demonstrating its ability to adapt, reorganize, and form new neural connections throughout life. This neuroplasticity underlies our capacity for learning, memory formation, and recovery from brain injuries, offering hope for treatments of neurological disorders and cognitive enhancement.",
+                "The philosophical implications of artificial general intelligence extend far beyond technical considerations, touching upon fundamental questions about consciousness, free will, and the nature of human existence. As we approach the possibility of creating machines that match or exceed human cognitive abilities, we must carefully consider the ethical, social, and existential implications of such technological advancement."
+            ]
+        };
+        
+        return texts[level] || texts.beginner;
+    }
+
+    updateUserTypingLevel() {
+        const currentWpm = this.typingTest.wpm;
+        const currentAccuracy = this.typingTest.accuracy;
+        
+        // Get existing stats
+        let userStats = JSON.parse(localStorage.getItem('userTypingStats') || '{"tests": [], "averageWpm": 0, "averageAccuracy": 0}');
+        
+        // Add current test result
+        userStats.tests.push({
+            wpm: currentWpm,
+            accuracy: currentAccuracy,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Keep only last 10 tests for average calculation
+        if (userStats.tests.length > 10) {
+            userStats.tests = userStats.tests.slice(-10);
+        }
+        
+        // Calculate new averages
+        const totalWpm = userStats.tests.reduce((sum, test) => sum + test.wpm, 0);
+        const totalAccuracy = userStats.tests.reduce((sum, test) => sum + test.accuracy, 0);
+        
+        userStats.averageWpm = Math.round(totalWpm / userStats.tests.length);
+        userStats.averageAccuracy = Math.round(totalAccuracy / userStats.tests.length);
+        
+        // Save updated stats
+        localStorage.setItem('userTypingStats', JSON.stringify(userStats));
+        
+        // Update the level indicator
+        this.updateTypingLevelIndicator();
+        
+        console.log(`📊 Updated typing stats: Average WPM: ${userStats.averageWpm}, Average Accuracy: ${userStats.averageAccuracy}%`);
+    }
+
+    showRepeatOption() {
+        const startBtn = document.getElementById('start-typing-test');
+        if (startBtn) {
+            startBtn.innerHTML = '<i class="fas fa-redo"></i> Try Another Test';
+            startBtn.disabled = false;
+            startBtn.onclick = () => this.startTypingTest();
+        }
+    }
+
+    updateTypingLevelIndicator() {
+        const levelBadge = document.getElementById('typing-level-badge');
+        const levelStats = document.getElementById('level-stats');
+        
+        if (!levelBadge || !levelStats) return;
+        
+        const userLevel = this.getUserTypingLevel();
+        const userStats = JSON.parse(localStorage.getItem('userTypingStats') || '{"averageWpm": 0, "averageAccuracy": 0}');
+        
+        // Update level badge
+        levelBadge.textContent = userLevel.charAt(0).toUpperCase() + userLevel.slice(1);
+        levelBadge.className = `level-badge ${userLevel}`;
+        
+        // Update stats
+        levelStats.textContent = `Average: ${userStats.averageWpm} WPM, ${userStats.averageAccuracy}% accuracy`;
+        
+        console.log(`📊 Updated typing level indicator: ${userLevel} (${userStats.averageWpm} WPM)`);
     }
 
     async importLessons() {

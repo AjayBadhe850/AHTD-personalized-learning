@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Test Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .typing-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .typing-level-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .level-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .level-badge.beginner {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        .level-badge.intermediate {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+        }
+        .level-badge.advanced {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+            color: white;
+        }
+        .typing-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            min-height: 100px;
+        }
+        .typing-input {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+        .typing-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-label {
+            display: block;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        .btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .debug-info {
+            background: #e9ecef;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Typing Test Debug Page</h1>
+    
+    <div class="typing-section">
+        <h3>Typing Speed Test</h3>
+        <div class="typing-level-indicator">
+            <span class="level-label">Your Level:</span>
+            <span class="level-badge beginner" id="typing-level-badge">Beginner</span>
+            <span class="level-stats" id="level-stats">Average: 0 WPM</span>
+        </div>
+        <div class="typing-test">
+            <div class="typing-text" id="typing-text">
+                Click "Start Test" to begin with a text matching your skill level!
+            </div>
+            <textarea id="typing-input" class="typing-input" placeholder="Start typing here..." disabled></textarea>
+            <div class="typing-stats">
+                <div class="stat">
+                    <span class="stat-label">WPM:</span>
+                    <span class="stat-value" id="wpm-display">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Accuracy:</span>
+                    <span class="stat-value" id="accuracy-display">0%</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Errors:</span>
+                    <span class="stat-value" id="errors-display">0</span>
+                </div>
+            </div>
+            <button class="btn btn-primary" id="start-typing-test">
+                <i class="fas fa-play"></i>
+                Start Test
+            </button>
+        </div>
+        
+        <div class="debug-info" id="debug-info">
+            <strong>Debug Information:</strong><br>
+            <span id="debug-messages">Ready to test...</span>
+        </div>
+    </div>
+
+    <script>
+        // Simplified typing test for debugging
+        class TypingTestDebug {
+            constructor() {
+                this.typingTest = {
+                    isActive: false,
+                    startTime: null,
+                    text: '',
+                    currentIndex: 0,
+                    errors: 0,
+                    wpm: 0,
+                    accuracy: 0
+                };
+                this.typingStatsInterval = null;
+                this.init();
+            }
+
+            init() {
+                console.log('🔧 Typing Test Debug initialized');
+                this.bindEvents();
+                this.updateTypingLevelIndicator();
+                this.log('Typing test debug page loaded successfully');
+            }
+
+            bindEvents() {
+                const startBtn = document.getElementById('start-typing-test');
+                const inputElement = document.getElementById('typing-input');
+
+                if (startBtn) {
+                    startBtn.addEventListener('click', () => {
+                        this.log('Start button clicked');
+                        this.startTypingTest();
+                    });
+                } else {
+                    this.log('❌ Start button not found!');
+                }
+
+                if (inputElement) {
+                    inputElement.addEventListener('input', (e) => {
+                        this.log('Input event triggered');
+                        this.handleTypingInput(e);
+                    });
+                } else {
+                    this.log('❌ Input element not found!');
+                }
+            }
+
+            log(message) {
+                const debugMessages = document.getElementById('debug-messages');
+                if (debugMessages) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    debugMessages.innerHTML += `<br>[${timestamp}] ${message}`;
+                    debugMessages.scrollTop = debugMessages.scrollHeight;
+                }
+                console.log(`[TypingTestDebug] ${message}`);
+            }
+
+            generateTypingText() {
+                const userLevel = this.getUserTypingLevel();
+                const texts = this.getTypingTextsByLevel(userLevel);
+                const randomIndex = Math.floor(Math.random() * texts.length);
+                this.log(`Generated ${userLevel} level text (${randomIndex + 1}/${texts.length})`);
+                return texts[randomIndex];
+            }
+
+            getUserTypingLevel() {
+                const userStats = localStorage.getItem('userTypingStats');
+                if (userStats) {
+                    const stats = JSON.parse(userStats);
+                    const avgWpm = stats.averageWpm || 0;
+                    
+                    if (avgWpm >= 60) return 'advanced';
+                    if (avgWpm >= 40) return 'intermediate';
+                    return 'beginner';
+                }
+                return 'beginner';
+            }
+
+            getTypingTextsByLevel(level) {
+                const texts = {
+                    beginner: [
+                        "The quick brown fox jumps over the lazy dog. This is a simple sentence for beginners to practice typing.",
+                        "Hello world! Welcome to typing practice. Start slow and focus on accuracy. Speed will come with time.",
+                        "Learning to type is fun and useful. Practice makes perfect. Keep your fingers on the home row keys.",
+                        "The cat sat on the mat. The dog ran in the park. These are easy words for typing practice.",
+                        "Type each letter carefully. Look at the screen, not your hands. This helps you learn faster."
+                    ],
+                    intermediate: [
+                        "The quick brown fox jumps over the lazy dog. This classic pangram contains every letter of the alphabet at least once, making it perfect for typing practice and keyboard testing.",
+                        "Technology has revolutionized the way we communicate, work, and learn. From smartphones to artificial intelligence, digital innovations continue to shape our daily lives and future possibilities.",
+                        "Education is the foundation of personal growth and societal progress. Through continuous learning, individuals can develop new skills, expand their knowledge, and contribute meaningfully to their communities.",
+                        "The art of programming combines logical thinking with creative problem-solving. Developers use various programming languages to build applications, websites, and software that solve real-world challenges.",
+                        "Climate change represents one of the most pressing challenges of our time. Sustainable practices, renewable energy, and environmental conservation are essential for protecting our planet for future generations."
+                    ],
+                    advanced: [
+                        "The quick brown fox jumps over the lazy dog. This pangram, while seemingly simple, demonstrates the complexity of English orthography and serves as an excellent tool for testing keyboard layouts, font rendering, and typing proficiency across different systems and applications.",
+                        "Quantum computing represents a paradigm shift in computational capabilities, leveraging quantum mechanical phenomena such as superposition and entanglement to process information in ways that classical computers cannot. This revolutionary technology promises to solve complex problems in cryptography, optimization, and scientific simulation.",
+                        "The intersection of artificial intelligence and human creativity has given rise to unprecedented possibilities in art, music, literature, and design. Machine learning algorithms can now generate original content, assist in creative processes, and even collaborate with human artists to produce innovative works that challenge traditional boundaries of authorship and artistic expression.",
+                        "Neuroscience research has revealed the remarkable plasticity of the human brain, demonstrating its ability to adapt, reorganize, and form new neural connections throughout life. This neuroplasticity underlies our capacity for learning, memory formation, and recovery from brain injuries, offering hope for treatments of neurological disorders and cognitive enhancement.",
+                        "The philosophical implications of artificial general intelligence extend far beyond technical considerations, touching upon fundamental questions about consciousness, free will, and the nature of human existence. As we approach the possibility of creating machines that match or exceed human cognitive abilities, we must carefully consider the ethical, social, and existential implications of such technological advancement."
+                    ]
+                };
+                
+                return texts[level] || texts.beginner;
+            }
+
+            async startTypingTest() {
+                this.log('Starting typing test...');
+                
+                const textElement = document.getElementById('typing-text');
+                const inputElement = document.getElementById('typing-input');
+                const startBtn = document.getElementById('start-typing-test');
+
+                if (!textElement || !inputElement || !startBtn) {
+                    this.log('❌ Typing test elements not found');
+                    return;
+                }
+
+                const newText = this.generateTypingText();
+                if (!newText) {
+                    this.log('❌ No typing text available');
+                    return;
+                }
+
+                textElement.textContent = newText;
+                this.log(`Text set: "${newText.substring(0, 50)}..."`);
+
+                this.typingTest.isActive = true;
+                this.typingTest.startTime = Date.now();
+                this.typingTest.text = newText;
+                this.typingTest.currentIndex = 0;
+                this.typingTest.errors = 0;
+                this.typingTest.wpm = 0;
+                this.typingTest.accuracy = 0;
+
+                inputElement.disabled = false;
+                inputElement.value = '';
+                inputElement.focus();
+                startBtn.textContent = 'Test in Progress...';
+                startBtn.disabled = true;
+
+                this.updateTypingStats();
+                this.log('✅ Typing test started successfully');
+
+                this.typingStatsInterval = setInterval(() => {
+                    this.updateTypingStats();
+                }, 100);
+            }
+
+            handleTypingInput(e) {
+                if (!this.typingTest.isActive) return;
+
+                const input = e.target.value;
+                const currentChar = this.typingTest.text[this.typingTest.currentIndex];
+                const typedChar = input[input.length - 1];
+
+                if (typedChar === currentChar) {
+                    this.typingTest.currentIndex++;
+                } else {
+                    this.typingTest.errors++;
+                }
+
+                this.updateTypingStats();
+
+                if (this.typingTest.currentIndex >= this.typingTest.text.length) {
+                    this.completeTypingTest();
+                }
+            }
+
+            updateTypingStats() {
+                if (!this.typingTest.isActive || !this.typingTest.startTime) return;
+
+                const elapsed = (Date.now() - this.typingTest.startTime) / 1000;
+                const wordsTyped = this.typingTest.currentIndex / 5;
+                const wpm = Math.round((wordsTyped / elapsed) * 60);
+                
+                let accuracy = 0;
+                if (this.typingTest.currentIndex > 0) {
+                    accuracy = Math.round(((this.typingTest.currentIndex - this.typingTest.errors) / this.typingTest.currentIndex) * 100);
+                    accuracy = Math.max(0, accuracy);
+                }
+
+                document.getElementById('wpm-display').textContent = wpm || 0;
+                document.getElementById('accuracy-display').textContent = `${accuracy}%`;
+                document.getElementById('errors-display').textContent = this.typingTest.errors;
+
+                this.typingTest.wpm = wpm || 0;
+                this.typingTest.accuracy = accuracy;
+            }
+
+            async completeTypingTest() {
+                this.log('Completing typing test...');
+                
+                this.typingTest.isActive = false;
+                
+                if (this.typingStatsInterval) {
+                    clearInterval(this.typingStatsInterval);
+                }
+
+                const inputElement = document.getElementById('typing-input');
+                const startBtn = document.getElementById('start-typing-test');
+
+                if (inputElement) inputElement.disabled = true;
+                if (startBtn) {
+                    startBtn.innerHTML = '<i class="fas fa-redo"></i> Try Another Test';
+                    startBtn.disabled = false;
+                    startBtn.onclick = () => this.startTypingTest();
+                }
+
+                const elapsed = (Date.now() - this.typingTest.startTime) / 1000;
+                const wordsTyped = this.typingTest.currentIndex / 5;
+                const finalWpm = Math.round((wordsTyped / elapsed) * 60);
+                let finalAccuracy = 0;
+                
+                if (this.typingTest.currentIndex > 0) {
+                    finalAccuracy = Math.round(((this.typingTest.currentIndex - this.typingTest.errors) / this.typingTest.currentIndex) * 100);
+                    finalAccuracy = Math.max(0, finalAccuracy);
+                }
+
+                this.typingTest.wpm = finalWpm || 0;
+                this.typingTest.accuracy = finalAccuracy;
+
+                this.log(`✅ Test completed! WPM: ${this.typingTest.wpm}, Accuracy: ${this.typingTest.accuracy}%`);
+                
+                this.updateUserTypingLevel();
+            }
+
+            updateUserTypingLevel() {
+                const currentWpm = this.typingTest.wpm;
+                const currentAccuracy = this.typingTest.accuracy;
+                
+                let userStats = JSON.parse(localStorage.getItem('userTypingStats') || '{"tests": [], "averageWpm": 0, "averageAccuracy": 0}');
+                
+                userStats.tests.push({
+                    wpm: currentWpm,
+                    accuracy: currentAccuracy,
+                    timestamp: new Date().toISOString()
+                });
+                
+                if (userStats.tests.length > 10) {
+                    userStats.tests = userStats.tests.slice(-10);
+                }
+                
+                const totalWpm = userStats.tests.reduce((sum, test) => sum + test.wpm, 0);
+                const totalAccuracy = userStats.tests.reduce((sum, test) => sum + test.accuracy, 0);
+                
+                userStats.averageWpm = Math.round(totalWpm / userStats.tests.length);
+                userStats.averageAccuracy = Math.round(totalAccuracy / userStats.tests.length);
+                
+                localStorage.setItem('userTypingStats', JSON.stringify(userStats));
+                
+                this.log(`📊 Updated stats: Average WPM: ${userStats.averageWpm}, Average Accuracy: ${userStats.averageAccuracy}%`);
+                this.updateTypingLevelIndicator();
+            }
+
+            updateTypingLevelIndicator() {
+                const levelBadge = document.getElementById('typing-level-badge');
+                const levelStats = document.getElementById('level-stats');
+                
+                if (!levelBadge || !levelStats) return;
+                
+                const userLevel = this.getUserTypingLevel();
+                const userStats = JSON.parse(localStorage.getItem('userTypingStats') || '{"averageWpm": 0, "averageAccuracy": 0}');
+                
+                levelBadge.textContent = userLevel.charAt(0).toUpperCase() + userLevel.slice(1);
+                levelBadge.className = `level-badge ${userLevel}`;
+                
+                levelStats.textContent = `Average: ${userStats.averageWpm} WPM, ${userStats.averageAccuracy}% accuracy`;
+                
+                this.log(`📊 Level updated: ${userLevel} (${userStats.averageWpm} WPM)`);
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new TypingTestDebug();
+        });
+    </script>
+</body>
+</html>

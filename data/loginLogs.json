@@ -110,5 +110,38 @@
     "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
     "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
     "status": "active"
+  },
+  {
+    "id": "1759921374766",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T11:02:54.766Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
+  },
+  {
+    "id": "1759921450849",
+    "studentId": "1759921441575",
+    "studentName": "BADE AJAY KUMAR",
+    "loginTime": "2025-10-08T11:04:10.849Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
+  },
+  {
+    "id": "1759921695665",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T11:08:15.665Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
   }
 ]

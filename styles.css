@@ -1459,6 +1459,52 @@ body {
     margin-bottom: var(--spacing-xl);
 }
 
+.typing-level-indicator {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.level-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.level-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.level-badge.beginner {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+}
+
+.level-badge.intermediate {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+}
+
+.level-badge.advanced {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+    color: white;
+}
+
+.level-stats {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-left: auto;
+}
+
 .import-form,
 .syllabus-form {
     display: grid;
