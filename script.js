@@ -2037,8 +2037,118 @@ class AILearningPlatform {
             return;
         }
 
-        // Show subject details modal or navigate to lessons section
-        this.showSubjectLessonsModal(subject, subjectLessons);
+        // Show subject details as full page instead of modal
+        this.showSubjectFullPage(subject, subjectLessons);
+    }
+
+    showSubjectFullPage(subject, lessons) {
+        // Hide all main content sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Create or update the subject full page content
+        let subjectPage = document.getElementById('subject-full-page');
+        if (!subjectPage) {
+            subjectPage = this.createSubjectFullPage();
+        }
+
+        // Populate with subject and lessons data
+        document.getElementById('subject-page-title').textContent = subject.name;
+        document.getElementById('subject-page-description').textContent = subject.description;
+        document.getElementById('subject-page-icon').className = `fas fa-${subject.icon}`;
+        document.getElementById('subject-page-icon').style.color = subject.color;
+        
+        // Update lessons count
+        const lessonsCount = document.getElementById('subject-page-lessons-count');
+        if (lessonsCount) {
+            lessonsCount.textContent = `${lessons.length} lessons available`;
+        }
+
+        // Populate lessons list
+        const lessonsContainer = document.getElementById('subject-page-lessons-list');
+        if (lessonsContainer) {
+            lessonsContainer.innerHTML = lessons.map(lesson => `
+                <div class="lesson-card" onclick="aiLearningPlatform.showLessonDetails('${lesson.id}')">
+                    <div class="lesson-card-header">
+                        <h4 class="lesson-card-title">${this.escapeHtml(lesson.title)}</h4>
+                        <span class="lesson-card-difficulty ${lesson.difficulty.toLowerCase()}">${lesson.difficulty}</span>
+                    </div>
+                    <p class="lesson-card-description">${this.escapeHtml(lesson.description)}</p>
+                    <div class="lesson-card-meta">
+                        <span class="lesson-duration">⏱️ ${lesson.duration}</span>
+                        <span class="lesson-order">📚 Lesson ${lesson.order}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Show the subject page
+        subjectPage.style.display = 'block';
+        
+        this.showToast(`Loaded ${lessons.length} lessons for ${subject.name}`, 'success');
+    }
+
+    createSubjectFullPage() {
+        const subjectPage = document.createElement('div');
+        subjectPage.id = 'subject-full-page';
+        subjectPage.className = 'content-section';
+        subjectPage.style.display = 'none';
+        subjectPage.innerHTML = `
+            <div class="subject-page-container">
+                <div class="subject-page-header">
+                    <button class="btn btn-secondary back-button" onclick="aiLearningPlatform.showDashboard()">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    <div class="subject-page-info">
+                        <div class="subject-page-icon-container">
+                            <i id="subject-page-icon" class="fas fa-book"></i>
+                        </div>
+                        <div class="subject-page-details">
+                            <h1 id="subject-page-title">Subject Name</h1>
+                            <p id="subject-page-description">Subject description will appear here.</p>
+                            <div class="subject-page-meta">
+                                <span id="subject-page-lessons-count" class="subject-lessons-count">
+                                    <i class="fas fa-play-circle"></i> 0 lessons available
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="subject-page-content">
+                    <div class="lessons-section">
+                        <h2>Available Lessons</h2>
+                        <div id="subject-page-lessons-list" class="lessons-grid">
+                            <!-- Lessons will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Insert after the header
+        const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.appendChild(subjectPage);
+        }
+        
+        return subjectPage;
+    }
+
+    showDashboard() {
+        // Hide subject page
+        const subjectPage = document.getElementById('subject-full-page');
+        if (subjectPage) {
+            subjectPage.style.display = 'none';
+        }
+
+        // Show dashboard section
+        const dashboardSection = document.getElementById('dashboard');
+        if (dashboardSection) {
+            dashboardSection.style.display = 'block';
+        }
     }
 
     showSubjectLessonsModal(subject, lessons) {

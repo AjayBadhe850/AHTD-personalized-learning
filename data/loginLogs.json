@@ -99,5 +99,16 @@
     "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
     "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Microsoft Windows 10.0.26100; en-IN) PowerShell/7.5.3",
     "status": "active"
+  },
+  {
+    "id": "1759919511642",
+    "studentId": "demo-student-001",
+    "studentName": "Alex Johnson",
+    "loginTime": "2025-10-08T10:31:51.642Z",
+    "logoutTime": null,
+    "sessionDuration": 0,
+    "deviceInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "browserInfo": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
+    "status": "active"
   }
 ]

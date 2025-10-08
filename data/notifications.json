@@ -569,5 +569,33 @@
     "timestamp": "2025-10-08T10:16:38.899Z",
     "status": "simulated",
     "isReal": false
+  },
+  {
+    "id": "1759919511840",
+    "type": "sms",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 4:01:51 pm.",
+    "timestamp": "2025-10-08T10:31:51.840Z",
+    "status": "simulated",
+    "isReal": false
+  },
+  {
+    "id": "1759919511842",
+    "type": "email",
+    "recipient": "sarah.johnson@demo.com",
+    "subject": "Student Login Notification",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 4:01:51 pm.",
+    "timestamp": "2025-10-08T10:31:51.842Z",
+    "status": "simulated",
+    "isReal": false
+  },
+  {
+    "id": "1759919511844",
+    "type": "whatsapp",
+    "recipient": "+17396230359",
+    "message": "📚 Alex Johnson has logged into the AI Learning Platform at 8/10/2025, 4:01:51 pm.",
+    "timestamp": "2025-10-08T10:31:51.844Z",
+    "status": "simulated",
+    "isReal": false
   }
 ]
